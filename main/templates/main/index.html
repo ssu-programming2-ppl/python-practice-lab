@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env>
+        - pandas
+        - matplotlib
+        - seaborn
+      </py-env>
+</head>
+<body>
+    <div id="graph"></div>
+</body>
+<py-script output = 'graph'>
+    
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots()
+
+data1 = [90, 80, 70, 60, 50]
+data2 = [80, 70, 90, 60, 70]
+
+plt.plot(data1, marker = 'o' , color = 'g', label = 'data1')
+plt.plot(data2, marker = '^', label = 'data2')
+plt.title('test graph')
+plt.legend()
+plt.grid(True)
+fig
+    
+</py-script>
+</html>
