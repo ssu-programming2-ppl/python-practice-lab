@@ -19,6 +19,12 @@ def create(request):
 def test(request):
     return render(request, 'main/test.html')
 
+def board(request):
+    return render(request, 'main/board.html')
+
+def overview(request):
+    return render(request, 'main/overview.html')
+
 def question(request):
     seq = request.GET.get('questionSeq', str(1))
     data = getQuestionInfo(seq)

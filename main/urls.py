@@ -10,5 +10,7 @@ urlpatterns = [
     path('list', views.list, name='list'),
     path('create', views.create, name='create'),
     path('test', views.test, name='test'),
-    path('question', views.question, name='question')
+    path('question', views.question, name='question'),
+    path('overview', views.overview, name='overview'),
+    path('board', views.board, name='board')
 ]
