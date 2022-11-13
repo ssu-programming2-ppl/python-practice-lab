@@ -1,5 +1,5 @@
 from question.models import Testcase
-import os, shutil
+import os, shutil, platform
 from core import utils
 
 # Create your views here.
@@ -28,14 +28,24 @@ def scoringQuestion(session_id, question_seq, question_code):
         file.write(testcase.testcase_input)
         file.close()
 
-        os.system(
-            "cat "
-            + input_file_name
-            + " | python3 "
-            + code_file_name
-            + " >> "
-            + output_file_name
-        )
+        if platform.system() == "Windows":
+            os.system(
+                "type "
+                + input_file_name.replace("/","\\")
+                + " | python "
+                + code_file_name.replace("/","\\")
+                + " >> "
+                + output_file_name.replace("/","\\")
+            )
+        else:
+            os.system(
+                "cat "
+                + input_file_name
+                + " | python3 "
+                + code_file_name
+                + " >> "
+                + output_file_name
+            )
 
         file = open(output_file_name, "r")
         output = file.read().strip()
@@ -44,6 +54,6 @@ def scoringQuestion(session_id, question_seq, question_code):
         if output == testcase.testcase_output:
             correct_count += 1
 
-    shutil.rmtree(session_id)
+    #shutil.rmtree(session_id)
 
     return (correct_count / total_count) * 100
