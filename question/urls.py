@@ -4,8 +4,8 @@ from . import views
 
 
 urlpatterns = [
-    path("list", views.list, name="list"),
-    path("create", views.create, name="create"),
+    path("list", views.question_list, name="list"),
+    path("create", views.question_create, name="create"),
     path("test", views.test, name="test"),
-    path("", views.question, name="question"),
+    path("<int:question_seq>/", views.question, name="question"),
 ]

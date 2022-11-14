@@ -10,7 +10,16 @@ def login(request):
 
 
 def register(request):
-    return render(request, "register.html")
+
+    if request.method == "GET":
+        return render(request, "register.html")
+    else:
+
+        body = json.loads(request.body.decode('utf-8'))
+
+        #TODO(김금주) 회원가입 로직 필요
+        # 1. body 변수에서 회원가입 정보를 추출후 사용자 테이블에 저장
+        return render(request, "register.html")
 
 
 def overview(request):

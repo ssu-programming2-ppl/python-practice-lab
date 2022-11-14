@@ -3,7 +3,7 @@ import os, shutil, platform
 from core import utils
 
 # Create your views here.
-def scoringQuestion(session_id, question_seq, question_code):
+def scoring_question(session_id, question_seq, question_code):
 
     testcase_list = Testcase.objects.filter(question_seq=question_seq)
 
@@ -14,7 +14,7 @@ def scoringQuestion(session_id, question_seq, question_code):
     file.write(question_code)
     file.close()
 
-    total_count = testcase_list.__len__()
+    total_count = len(testcase_list)
     correct_count = 0
 
     for testcase in testcase_list:
@@ -29,23 +29,14 @@ def scoringQuestion(session_id, question_seq, question_code):
         file.close()
 
         if platform.system() == "Windows":
-            os.system(
-                "type "
-                + input_file_name.replace("/","\\")
-                + " | python "
-                + code_file_name.replace("/","\\")
-                + " >> "
-                + output_file_name.replace("/","\\")
-            )
+            input_file_name = input_file_name.replace('/','\\')
+            code_file_name = code_file_name.replace('/','\\')
+            output_file_name = output_file_name.replace('/','\\')
+
+
+            os.system(f"type {input_file_name} | python {code_file_name} >> {output_file_name}")
         else:
-            os.system(
-                "cat "
-                + input_file_name
-                + " | python3 "
-                + code_file_name
-                + " >> "
-                + output_file_name
-            )
+            os.system(f"cat {input_file_name} | python3 {code_file_name} >> {output_file_name}")
 
         file = open(output_file_name, "r")
         output = file.read().strip()
@@ -54,6 +45,6 @@ def scoringQuestion(session_id, question_seq, question_code):
         if output == testcase.testcase_output:
             correct_count += 1
 
-    #shutil.rmtree(session_id)
+    shutil.rmtree(session_id)
 
     return (correct_count / total_count) * 100
