@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% block page_title %}
-   문제 생성
+문제 생성
 {% endblock page_title %}
 {% block content %}
-   <!-- Main Content -->
-   <div id="content">
-      <!-- Topbar -->
-      {% include "topbar.html" %}
-      <!-- End of Topbar -->
-      <!-- Begin Page Content -->
-      <div class="container-fluid">
+<!-- Main Content -->
+<div id="content">
+   <!-- Topbar -->
+   {% include "topbar.html" %}
+   <!-- End of Topbar -->
+   <!-- Begin Page Content -->
+   <div class="container-fluid">
       <h1>문제 풀이</h1>
       <div class="card shadow mb-4">
          <div class="card-body">
@@ -18,7 +18,7 @@
                   문제 명
                   <div class="form-outline">
                      <div class="card text-center">
-                        <div class="card-body" style="text-align: left;">{{ question_title }}</div>
+                        <div class="card-body" style="text-align: left;">{{ question.question_title }}</div>
                      </div>
                   </div>
                </div>
@@ -26,32 +26,18 @@
                   난이도
                   <div class="form-outline">
                      <div class="card text-center">
-                        <div class="card-body" style="text-align: left;">{{ question_level }}</div>
+                        <div class="card-body" style="text-align: left;">{{ question.question_level }}</div>
                      </div>
                   </div>
                </div>
             </div>
             <div class="form-group">
-               ß
                <div>문제 설명</div>
                <div class="form-outline">
                   <div class="card text-center">
                      <div class="card-body">
                         <pre class="card-text" style="text-align: left;">
-문제
-재용이는 최신 컴퓨터 10대를 가지고 있다. 어느 날 재용이는 많은 데이터를 처리해야 될 일이 생겨서 각 컴퓨터에 1번부터 10번까지의 번호를 부여하고, 10대의 컴퓨터가 다음과 같은 방법으로 데이터들을 처리하기로 하였다.
-
-1번 데이터는 1번 컴퓨터, 2번 데이터는 2번 컴퓨터, 3번 데이터는 3번 컴퓨터, ... ,
-
-10번 데이터는 10번 컴퓨터, 11번 데이터는 1번 컴퓨터, 12번 데이터는 2번 컴퓨터, ...
-
-총 데이터의 개수는 항상 ab개의 형태로 주어진다. 재용이는 문득 마지막 데이터가 처리될 컴퓨터의 번호가 궁금해졌다. 이를 수행해주는 프로그램을 작성하라.
-
-입력
-입력의 첫 줄에는 테스트 케이스의 개수 T가 주어진다. 그 다음 줄부터 각각의 테스트 케이스에 대해 정수 a와 b가 주어진다. (1 ≤ a < 100, 1 ≤ b < 1,000,000)
-
-출력
-각 테스트 케이스에 대해 마지막 데이터가 처리되는 컴퓨터의 번호를 출력한다.</pre>
+{{ question.question_text }}</pre>
                      </div>
                   </div>
                </div>
@@ -60,20 +46,38 @@
             <div class="form-group row">
                <div class="col-sm-9 mb-3 mb-sm-0">
                   <div class="form-outline">
-                     <textarea class="form-control" id="textAreaExample2" rows="4" style="resize: none; height : 1000px;">
-def main():
-   """Run administrative tasks."""
-   os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ppl.settings')
-   try:
-         from django.core.management import execute_from_command_line
-   except ImportError as exc:
-         raise ImportError(
-            "Couldn't import Django. Are you sure it's installed and "
-            "available on your PYTHONPATH environment variable? Did you "
-            "forget to activate a virtual environment?"
-         ) from exc
-   execute_from_command_line(sys.argv)
-                              </textarea>
+                     <textarea class="form-control" id="question_code" rows="4" style="resize: none; height : 700px;">
+from collections import deque
+
+m, n = map(int, input().split())
+matrix = [list(map(int, input().split())) for _ in range(n)]
+queue = deque([])
+dx, dy = [-1, 1, 0, 0], [0, 0, -1, 1]
+res = 0
+
+for i in range(n):
+      for j in range(m):
+         if matrix[i][j] == 1:
+            queue.append([i, j])
+
+def bfs():
+      while queue:
+         x, y = queue.popleft()
+         for i in range(4):
+            nx, ny = dx[i] + x, dy[i] + y
+            if 0 <= nx < n and 0 <= ny < m and matrix[nx][ny] == 0:
+                  matrix[nx][ny] = matrix[x][y] + 1
+                  queue.append([nx, ny])
+
+bfs()
+for i in matrix:
+      for j in i:
+         if j == 0:
+            print(-1)
+            exit(0)
+      res = max(res, max(i))
+print(res - 1)
+                     </textarea>
                   </div>
                </div>
                <div class="col-sm-3">
@@ -86,8 +90,36 @@ def main():
                   </div>
                </div>
             </div>
+            <div class="form-group row">
+               <div class="col-sm-6">
+                  <button type="button" class="btn badge-warning" id="excuteButton" pys-onClick="excute_question">코드실행</button>
+               </div>
+               <div class="col-sm-6">
+                  <button type="button" class="btn badge-warning" id="scoringButton">문제 제출 및 채점</button>
+               </div>
+            </div>
          </div>
       </div>
    </div>
-   </div>
+</div>
+<py-env>
+   - paths:
+     - /static/python/utils.py
+ </py-env>
+<py-script>
+   from js import document, window 
+   import asyncio  
+   import json
+   from utils import request
+   
+   async def excute_question(e):
+
+      question_code = document.getElementById("question_code").value
+      body = json.dumps({"question_code": question_code, "question_seq": 4,})
+
+      data = await request("http://{{request.get_host}}" + "/question/submit", body=body, method="POST")
+      result_json = await data.json()           
+      window.alert(f"{result_json['data']} 점")
+
+   </py-script>
 {% endblock content %}

@@ -96,18 +96,18 @@
         </ul>
         <!-- End of Sidebar -->
         <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
-        <py-script>
+        <py-script >
             if "{{request.path}}".startswith("/question"):
-                ul_element = Element("questionMenu")
-                ul_element.add_class('active')
+                menu = Element("questionMenu")
+                menu.add_class('active')
             elif "{{request.path}}".startswith("/board"):
-                ul_element = Element("boardMenu")
-                ul_element.add_class('active')
+                menu = Element("boardMenu")
+                menu.add_class('active')
             elif "{{request.path}}".startswith("/overview"):
-                ul_element = Element("overviewMenu")
-                ul_element.add_class('active')
+                menu = Element("overviewMenu")
+                menu.add_class('active')
             elif "{{request.path}}".startswith("/dashboard"):
-                ul_element = Element("dashboardMenu")
-                ul_element.add_class('active')
+                menu = Element("dashboardMenu")
+                menu.add_class('active')
                 
         </py-script>
