@@ -7,7 +7,7 @@ def scoring_question(session_id, question_seq, question_code):
 
     testcase_list = Testcase.objects.filter(question_seq=question_seq)
 
-    utils.createFolder(session_id)
+    utils.create_folder(session_id)
 
     code_file_name = session_id + "/" + question_seq + ".py"
     file = open(code_file_name, "w")

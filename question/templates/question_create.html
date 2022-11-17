@@ -1,171 +1,138 @@
 {% extends "base.html" %}
 {% block page_title %}
-   문제 생성
+  문제 생성
 {% endblock page_title %}
 
 {% block content %}
-   <!-- Main Content -->
-   <div id="content">
-      <!-- Topbar -->
-   {% include "topbar.html" %}
-   <!-- End of Topbar -->
+  <!-- Main Content -->
+  <div id="content">
+    <!-- Topbar -->
+    {% include "topbar.html" %}
+    <!-- End of Topbar -->
     <!-- Begin Page Content -->
-      <div class="container-fluid">
+    <div class="container-fluid">
 
       <h1>문제 생성</h1>
       <div class="card shadow mb-4">
-         <div class="card-body">
-            <div>문제 사용 언어 선택</div>
+        <div class="card-body">
+          <div>문제 사용 언어 선택</div>
+          <br>
+          <div class="form-group row">
+            <div class="col-sm-4">
+              <input class="" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"/>
+              <label class="" for="inlineRadio1">Python</label>
+            </div>
+            <div class="col-sm-4">
+              <input class="" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" disabled="disabled"/>
+              <label class="" for="inlineRadio1">C</label>
+            </div>
+            <div class="col-sm-4">
+              <input class="" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" disabled="disabled"/>
+              <label class="" for="inlineRadio1">Java</label>
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-6 mb-3 mb-sm-0">
+              <input type="text" class="form-control form-control-user" id="exampleFirstName" placeholder="문제명을 입력해주세요">
+            </div>
+            <div class="col-sm-3">
+              <nav class=" navbar-expand navbar-light bg-light mb-4">
+                <ul class="navbar-nav ml-auto">
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      난이도 선택
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right animated--grow-in" aria-labelledby="navbarDropdown">
+                      <a class="dropdown-item" href="#">상</a>
+                      <a class="dropdown-item" href="#">중</a>
+                      <a class="dropdown-item" href="#">하</a>
+                    </div>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+            <div class="col-sm-3">
+              <button type="button" class="btn badge-warning">문제 제출</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <div>문제 설명</div>
+            <br>
+            <div class="form-outline">
+              <textarea class="form-control" id="textAreaExample1" rows="4"></textarea>
+            </div>
+          </div>
+          <div class="form-group">
             <div class="form-group row">
-               <div class="col-sm-4">
-                  <input class=""
-                         type="radio"
-                         name="inlineRadioOptions"
-                         id="inlineRadio1"
-                         value="option1"/>
-                  <label class="" for="inlineRadio1">Python</label>
-               </div>
-               <div class="col-sm-4">
-                  <input class=""
-                         type="radio"
-                         name="inlineRadioOptions"
-                         id="inlineRadio1"
-                         value="option1"
-                         disabled/>
-                  <label class="" for="inlineRadio1">C</label>
-               </div>
-               <div class="col-sm-4">
-                  <input class=""
-                         type="radio"
-                         name="inlineRadioOptions"
-                         id="inlineRadio1"
-                         value="option1"
-                         disabled/>
-                  <label class="" for="inlineRadio1">Java</label>
-               </div>
+              <div class="col-sm-10 mb-3 mb-sm-0">예시 코드</div>
+              <div class="col-sm-2">
+                <button type="button" class="btn  badge-warning">문법 확인</button>
+              </div>
             </div>
-            <div class="form-group row">
-               <div class="col-sm-6 mb-3 mb-sm-0">
-                  <input type="text"
-                         class="form-control form-control-user"
-                         id="exampleFirstName"
-                         placeholder="문제명을 입력해주세요">
-               </div>
-               <div class="col-sm-3">
-                  <nav class=" navbar-expand navbar-light bg-light mb-4">
-                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item dropdown">
-                           <a class="nav-link dropdown-toggle"
-                              href="#"
-                              id="navbarDropdown"
-                              role="button"
-                              data-toggle="dropdown"
-                              aria-haspopup="true"
-                              aria-expanded="false">
-                              난이도 선택
-                           </a>
-                           <div class="dropdown-menu dropdown-menu-right animated--grow-in"
-                                aria-labelledby="navbarDropdown">
-                              <a class="dropdown-item" href="#">상</a>
-                              <a class="dropdown-item" href="#">중</a>
-                              <a class="dropdown-item" href="#">하</a>
-                           </div>
-                        </li>
-                     </ul>
-                  </nav>
-               </div>
-               <div class="col-sm-3">
-                  <button type="button" class="btn badge-warning">문제 제출</button>
-               </div>
+            <div class="form-outline">
+              <textarea class="form-control" id="textAreaExample2" rows="4"></textarea>
             </div>
-            <div class="form-group">
-               <div>문제 설명</div>
-               <div class="form-outline">
-                  <textarea class="form-control" id="textAreaExample1" rows="4"></textarea>
-               </div>
-            </div>
-            <div class="form-group">
-               <div class="form-group row">
-                  <div class="col-sm-10 mb-3 mb-sm-0">예시 코드</div>
-                  <div class="col-sm-2">
-                     <button type="button" class="btn  badge-warning">문법 확인</button>
-                  </div>
-               </div>
-               <div class="form-outline">
-                  <textarea class="form-control" id="textAreaExample2" rows="4"></textarea>
-               </div>
-            </div>
+          </div>
 
-            <div class="form-group">
-               <div>테스트 케이스</div>
-               <section class="row">
-                  <ul id="items"></ul>
-               </section>
-            </div>
-            <!-- 테스트 케이스 3 -->
-            
-            <!-- end -->
+          <div class="form-group">
+            <div>테스트 케이스</div>
+            <br>
+              <ul id="items"></ul>
+          </div>
+          <!-- 테스트 케이스 3 -->
 
+          <!-- end -->
 
-            <div class="form-group row">
-               <div class="col-sm-11 mb-3 mb-sm-0"></div>
-               <div class="col-sm-1" style="margin-left:auto;">
-                  <button type="button" class="btn badge badge-warning" id="add_btn" pys-onClick="add_tc">
-                     +
-                  </button>
-                  <button type="button" class="btn badge badge-warning" id="remove_btn" pys-onClick="remove_tc">
-                     -
-                  </button>
-               </div>
+          <div class="form-group row">
+            <div class="col-sm-11 mb-3 mb-sm-0"></div>
+            <div class="col-sm-1" style="margin-left:auto;">
+              <button type="button" class="btn badge badge-warning" id="add_btn" pys-onclick="add_tc">
+                +
+              </button>
+              <button type="button" class="btn badge badge-warning" id="remove_btn" pys-onclick="remove_tc">
+                -
+              </button>
             </div>
-         </div>
+          </div>
+        </div>
       </div>
-   </div>
-   </div>
+    </div>
+  </div>
 
-   <template id="task-template">
-        <div class="task form-group row">
-               <div>테스트 케이스 (정답)</div>
-               <div class="col-sm-5 mb-3 mb-sm-0">
-                  <div class="form-group row">
-                     <div class="col-sm-2">입력값 :</div>
-                     <div class="col-sm-10">
-                        <input type="text"
-                               class="form-control form-control-user"
-                               id="exampleRepeatPassword"
-                               placeholder="입력값">
-                     </div>
-                  </div>
-               </div>
-               <div class="col-sm-5">
-                  <div class="form-group row">
-                     <div class="col-sm-2">출력값 :</div>
-                     <div class="col-sm-10">
-                        <input type="text"
-                               class="form-control form-control-user"
-                               id="exampleRepeatPassword"
-                               placeholder="출력값">
-                     </div>
-                  </div>
-               </div>
-               <div class="col-sm-2">
-                  <div class="form-check form-switch">
-                     <input class="form-check-input"
-                            type="checkbox"
-                            role="switch"
-                            id="flexSwitchCheckDefault1"/>
-                     <label class="form-check-label" for="flexSwitchCheckDefault1">테스트케이스 공개</label>
-                  </div>
-               </div>
-            </div>
+  <template id="task-template">
+    <div>테스트 케이스 (정답)</div>
+    <div class="task form-group row">
+      <div class="col-sm-5 mb-3 mb-sm-0">
+        <div class="form-group row">
+          <div class="col-sm-2">입력값 :</div>
+          <div class="col-sm-10">
+            <input type="text" class="form-control form-control-user" id="exampleRepeatPassword" placeholder="입력값">
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-5">
+        <div class="form-group row">
+          <div class="col-sm-2">출력값 :</div>
+          <div class="col-sm-10">
+            <input type="text" class="form-control form-control-user" id="exampleRepeatPassword" placeholder="출력값">
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-2">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault1"/>
+          <label class="form-check-label" for="flexSwitchCheckDefault1">테스트케이스 공개</label>
+        </div>
+      </div>
+    </div>
 
-    </template>
+  </template>
 
-    <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+  <script defer="defer" src="https://pyscript.net/alpha/pyscript.js"></script>
 
-    <!-- pyscript  -->
-    <py-script>
-    
+  <!-- pyscript -->
+  <py-script>
+
     tasks = []
     task_list = Element("items")
     template = Element("task-template").select(".task", from_content=True)
@@ -185,10 +152,8 @@
     def remove_tc(*args):
       if(len(task_list.element.childNodes) > 1):
           task_list.element.childNodes[-1].remove()
-        
-    </py-script>
 
+  </py-script>
 
-   <!-- End of Main Content -->
+  <!-- End of Main Content -->
 {% endblock content %}
-    
