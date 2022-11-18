@@ -131,7 +131,7 @@
   <script defer="defer" src="https://pyscript.net/alpha/pyscript.js"></script>
 
   <!-- pyscript -->
-  <py-script>
+  <py-script style='display:none;'>
 
     tasks = []
     task_list = Element("items")
@@ -153,6 +153,7 @@
       if(len(task_list.element.childNodes) > 1):
           task_list.element.childNodes[-1].remove()
 
+    add_tc()
   </py-script>
 
   <!-- End of Main Content -->

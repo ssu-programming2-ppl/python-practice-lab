@@ -1,15 +1,33 @@
 from question.models import Testcase
 import os, shutil, platform
 from core import utils
+import uuid
 
 # Create your views here.
-def scoring_question(session_id, question_seq, question_code):
+def scoring_question(question_seq, question_code):
 
     testcase_list = Testcase.objects.filter(question_seq=question_seq)
 
-    utils.create_folder(session_id)
+    _, percent = test(question_code, testcase_list)
 
-    code_file_name = session_id + "/" + question_seq + ".py"
+    return percent
+
+def excute_question(question_seq, question_code):
+
+    testcase_list = Testcase.objects.filter(question_seq=question_seq, testcase_open_yn='Y')
+
+    result, _ = test(question_code, testcase_list)
+
+    return result
+
+def test(question_code, testcase_list):
+
+    result = []
+
+    id = str(uuid.uuid4())
+    utils.create_folder(id)
+
+    code_file_name = f"{id}/source.py"
     file = open(code_file_name, "w")
     file.write(question_code)
     file.close()
@@ -18,11 +36,9 @@ def scoring_question(session_id, question_seq, question_code):
     correct_count = 0
 
     for testcase in testcase_list:
-        input_file_name = session_id + "/" + "in_" + str(testcase.testcase_seq) + ".txt"
+        input_file_name = f"{id}/in_{testcase.testcase_seq}.txt"
 
-        output_file_name = (
-            session_id + "/" + "out_" + str(testcase.testcase_seq) + ".txt"
-        )
+        output_file_name = f"{id}/out_{testcase.testcase_seq}.txt"
 
         file = open(input_file_name, "w")
         file.write(testcase.testcase_input)
@@ -42,9 +58,20 @@ def scoring_question(session_id, question_seq, question_code):
         output = file.read().strip()
         file.close()
 
+        # 결과 생성
+        json = {
+            "input": testcase.testcase_input,
+            "output" : output,
+            "answer" : testcase.testcase_output,
+            "flag": False
+        }
+
         if output == testcase.testcase_output:
             correct_count += 1
+            json["flag"] = True
+        
+        result.append(json)
+        
+    shutil.rmtree(id)
 
-    shutil.rmtree(session_id)
-
-    return (correct_count / total_count) * 100
+    return result, (correct_count / total_count) * 100

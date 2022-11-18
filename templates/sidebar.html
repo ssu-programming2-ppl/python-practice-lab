@@ -95,8 +95,7 @@
 
         </ul>
         <!-- End of Sidebar -->
-        <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
-        <py-script >
+        <py-script style="display:none;">
             if "{{request.path}}".startswith("/question"):
                 menu = Element("questionMenu")
                 menu.add_class('active')

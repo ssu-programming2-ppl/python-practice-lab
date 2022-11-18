@@ -67,13 +67,23 @@
                                         <td>{{question.question_lang}}</td>
                                         <td>
                                             <ul class="list-inline mb-0">
-                                                <li class="list-inline-item">
-                                                    <a href="javascript:void(0);"
-                                                       data-bs-toggle="tooltip"
-                                                       data-bs-placement="top"
-                                                       title="save"
-                                                       class="px-2 text-primary"><i class="fa-regular fa-bookmark"></i></a>
-                                                </li>
+                                                {% if question.question_save_yn == 'Y' %}
+                                                    <li class="list-inline-item">
+                                                        <a href="javascript:void(0);"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
+                                                        title="save"
+                                                        class="px-2 text-primary"><i class="fa-solid fa-bookmark"></i></a>
+                                                    </li>
+                                                {% else %}
+                                                    <li class="list-inline-item">
+                                                        <a href="javascript:void(0);"
+                                                        data-bs-toggle="tooltip"
+                                                        data-bs-placement="top"
+                                                        title="save"
+                                                        class="px-2 text-primary"><i class="fa-regular fa-bookmark"></i></a>
+                                                    </li>
+                                                {% endif %}
                                             </ul>
                                         </td>
                                     </tr>
