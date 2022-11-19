@@ -3,30 +3,56 @@ import os, shutil, platform
 from core import utils
 import uuid
 
-# Create your views here.
 def scoring_question(question_seq, question_code):
+    """
+    문제 채점 함수(모든 테스트케이스로 채점을 진행)
+        Args:
+            question_seq (int): 문제 번호(시퀀스)
+            question_code (str): 문제 풀이 소스코드
+        Retruns:
+            채점 점수
+    """
 
     testcase_list = Testcase.objects.filter(question_seq=question_seq)
 
-    _, percent = test(question_code, testcase_list)
+    _, percent = scoring_code(question_code, testcase_list)
 
     return percent
 
 def excute_question(question_seq, question_code):
 
+    """
+    문제 제출 함수(공개된 테스트케이스로만 채점을 진행)
+        Args:
+            question_seq (int): 문제 번호(시퀀스)
+            question_code (str): 문제 풀이 소스코드
+        Retruns:
+            채점 점수
+    """
+
     testcase_list = Testcase.objects.filter(question_seq=question_seq, testcase_open_yn='Y')
 
-    result, _ = test(question_code, testcase_list)
+    result, _ = scoring_code(question_code, testcase_list)
 
     return result
 
-def test(question_code, testcase_list):
+def scoring_code(question_code, testcase_list):
+
+    """
+    코드 채점 함수
+        Args:
+            question_code (str): 문제 풀이 소스코드
+            testcase_list (Testcase): 테스트케이스 모델 리스트
+        Retruns:
+            채점 점수
+    """
 
     result = []
 
     id = str(uuid.uuid4())
     utils.create_folder(id)
 
+    # 풀이 코드 파일 생성
     code_file_name = f"{id}/source.py"
     file = open(code_file_name, "w")
     file.write(question_code)
@@ -37,13 +63,13 @@ def test(question_code, testcase_list):
 
     for testcase in testcase_list:
         input_file_name = f"{id}/in_{testcase.testcase_seq}.txt"
-
         output_file_name = f"{id}/out_{testcase.testcase_seq}.txt"
 
         file = open(input_file_name, "w")
         file.write(testcase.testcase_input)
         file.close()
 
+        # 채점 진행
         if platform.system() == "Windows":
             input_file_name = input_file_name.replace('/','\\')
             code_file_name = code_file_name.replace('/','\\')
