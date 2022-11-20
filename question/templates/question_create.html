@@ -19,50 +19,42 @@
           <br>
           <div class="form-group row">
             <div class="col-sm-4">
-              <input class="" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1"/>
+              <input class="" type="radio" name="inlineRadioOptions" id="question_lang_python" checked value="Python"/>
               <label class="" for="inlineRadio1">Python</label>
             </div>
             <div class="col-sm-4">
-              <input class="" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" disabled="disabled"/>
+              <input class="" type="radio" name="inlineRadioOptions" id="question_lang" value="C" disabled="disabled"/>
               <label class="" for="inlineRadio1">C</label>
             </div>
             <div class="col-sm-4">
-              <input class="" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" disabled="disabled"/>
+              <input class="" type="radio" name="inlineRadioOptions" id="question_lang" value="Java" disabled="disabled"/>
               <label class="" for="inlineRadio1">Java</label>
             </div>
           </div>
           <div class="form-group row">
             <div class="col-sm-6 mb-3 mb-sm-0">
-              <input type="text" class="form-control form-control-user" id="exampleFirstName" placeholder="문제명을 입력해주세요">
+              <input type="text" class="form-control form-control-user" id="question_title" placeholder="문제명을 입력해주세요">
+            </div>
+            <div class="col-sm-3">              
+            <select class="selectpicker" id= "question_level">
+               <option id="high">상</option>
+               <option id="middle">중</option>
+               <option id="row">하</option>
+            </select>
+
             </div>
             <div class="col-sm-3">
-              <nav class=" navbar-expand navbar-light bg-light mb-4">
-                <ul class="navbar-nav ml-auto">
-                  <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                      난이도 선택
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right animated--grow-in" aria-labelledby="navbarDropdown">
-                      <a class="dropdown-item" href="#">상</a>
-                      <a class="dropdown-item" href="#">중</a>
-                      <a class="dropdown-item" href="#">하</a>
-                    </div>
-                  </li>
-                </ul>
-              </nav>
-            </div>
-            <div class="col-sm-3">
-              <button type="button" class="btn badge-warning">문제 제출</button>
+              <button type="button" class="btn badge-warning" id="btn_submit_question" pys-onClick="create_question">문제 제출</button>
             </div>
           </div>
           <div class="form-group">
             <div>문제 설명</div>
             <br>
             <div class="form-outline">
-              <textarea class="form-control" id="textAreaExample1" rows="4"></textarea>
+              <textarea class="form-control" id="question_text" rows="4"></textarea>
             </div>
           </div>
-          <div class="form-group">
+         <div class="form-group">
             <py-repl auto-generate="false" id ="code-area" > </py-repl>
             
             <div class="form-group row">
@@ -107,7 +99,7 @@
         <div class="form-group row">
           <div class="col-sm-2">입력값 :</div>
           <div class="col-sm-10">
-            <input type="text" class="form-control form-control-user" id="exampleRepeatPassword" placeholder="입력값">
+            <input type="text" required class="testcase_input form-control form-control-user" placeholder="입력값">
           </div>
         </div>
       </div>
@@ -115,13 +107,13 @@
         <div class="form-group row">
           <div class="col-sm-2">출력값 :</div>
           <div class="col-sm-10">
-            <input type="text" class="form-control form-control-user" id="exampleRepeatPassword" placeholder="출력값">
+            <input type="text" required class="testcase_output form-control form-control-user"  placeholder="출력값">
           </div>
         </div>
       </div>
       <div class="col-sm-2">
         <div class="form-check form-switch">
-          <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault1"/>
+          <input class="testcase_open_yn form-check-input" type="checkbox" role="switch"/>
           <label class="form-check-label" for="">테스트케이스 공개</label>
         </div>
       </div>
@@ -133,14 +125,63 @@
   <py-env>
     - paths:
       - /static/python/utils.py
+      - /static/python/utile.py
   </py-env>
   <!-- pyscript -->
   <py-script style='display:none;'>
-    from utils import parse_code
+    from js import document, window 
+    import asyncio, json, datetime
+    from utile import *
 
     tasks = []
     task_list = Element("items")
     template = Element("task-template").select(".task", from_content=True)
+
+
+    async def create_question(*args):
+
+      json_data = {
+         'question_title' : '',
+         'question_level' : '',
+         'question_lang' : '',
+         'question_text' :  '',
+         'question_code' : '',
+         'testcase_list' : []
+      }
+
+      json_data['question_title'] = document.getElementById("question_title").value
+      json_data['question_level'] = document.querySelector("#question_level").value
+      if document.querySelector("#question_lang_python").checked :
+          json_data['question_lang'] = 'Python'
+      json_data['question_text'] = document.getElementById("question_text").value
+      json_data['question_code'] = parse_code(Element("code-area"))
+
+      tc_input_list = []
+      tc_output_list = []
+      testcase_open_yn = []
+
+      tc_input_list = document.querySelectorAll(".testcase_input")
+      tc_output_list = document.querySelectorAll(".testcase_output")
+      tc_open_yn_list = document.querySelectorAll(".testcase_open_yn")
+
+      for i in range(len(tc_input_list)):
+         if tc_open_yn_list[i].checked:
+            yn = 'Y'
+         else:
+            yn = 'N'
+         json_data['testcase_list'].append(
+            { 
+               'testcase_input' : tc_input_list[i].value,
+               'testcase_output' : tc_output_list[i].value,
+               'testcase_open_yn' : yn
+            }
+         )
+
+      body = json.dumps(json_data)
+      data = await request("http://{{request.get_host}}" + "/question/create", body=body, method="POST")
+      result_json = await data.json()           
+      window.alert(result_json)
+
 
     def add_tc(*args):
       todo_id = f"todo-{len(tasks)}"
@@ -151,6 +192,7 @@
       tasks.append(todo)
       task_html = template.clone(todo_id, to=task_list)
       task_list.element.appendChild(task_html.element)
+
 
     def remove_tc(*args):
       if(len(task_list.element.childNodes) > 1):
