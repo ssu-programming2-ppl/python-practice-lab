@@ -44,7 +44,7 @@
 
             </div>
             <div class="col-sm-3">
-              <button type="button" class="btn badge-warning" id="btn_submit_question" pys-onClick="create_question">문제 제출</button>
+              <button type="button" class="btn badge-warning" id="btn_submit_question" pys-onClick="create_question"  style="float: right;">문제 제출</button>
             </div>
           </div>
           <div class="form-group">
@@ -55,22 +55,29 @@
             </div>
           </div>
          <div class="form-group">
+            <div>문제 정답 코드</div>
+            <br>
             <py-repl auto-generate="false" id ="code-area" > </py-repl>
-            
-            <div class="form-group row">
-              <div class="col-sm-2">
-                <button type="button" class="btn  badge-warning">문법 확인</button>
-              </div>
-            </div>
-            <div class="form-outline">
-              <textarea class="form-control" id="textAreaExample2" rows="4"></textarea>
-            </div>
+            <br>
+            <button type="button" class="btn  badge-warning" id="btn_syntax_check" pys-onclick="syntax_check"  style="float: right;">문법 확인</button>
           </div>
-
+          <br>
           <div class="form-group">
             <div>테스트 케이스</div>
+            <button type="button" class="btn badge-warning" id="btn_tc_check" pys-onclick="tc_check"  style="float: right;">테스트 케이스 확인</button>
             <br>
-              <ul id="items"></ul>
+            <br>
+            <br>
+            <ul>
+                <div class="form-group row">
+                  <div class="col-sm-5" style="text-align: center;">입력값</div>
+                  <div class="col-sm-5" style="text-align: center;">출력값</div>
+                  <div class="col-sm-1" style="text-align: center;">테스트케이스 공개</div>
+                  <div class="col-sm-1" style="text-align: center;">코드 확인</div>
+                </div>
+              </ul>
+              <ul id="items">
+              </ul>
           </div>
           <!-- 테스트 케이스 3 -->
 
@@ -95,27 +102,17 @@
   <template id="task-template">
     <div>테스트 케이스 (정답)</div>
     <div class="task form-group row">
-      <div class="col-sm-5 mb-3 mb-sm-0">
-        <div class="form-group row">
-          <div class="col-sm-2">입력값 :</div>
-          <div class="col-sm-10">
-            <input type="text" required class="testcase_input form-control form-control-user" placeholder="입력값">
-          </div>
-        </div>
+      <div class="col-sm-5">
+        <textarea class="form-control testcase_input"  style="resize: none;" rows="1" placeholder="입력값" required></textarea>
       </div>
       <div class="col-sm-5">
-        <div class="form-group row">
-          <div class="col-sm-2">출력값 :</div>
-          <div class="col-sm-10">
-            <input type="text" required class="testcase_output form-control form-control-user"  placeholder="출력값">
-          </div>
-        </div>
+        <textarea class="form-control testcase_output"  style="resize: none;" rows="1" placeholder="출력값" required></textarea>
       </div>
-      <div class="col-sm-2">
-        <div class="form-check form-switch">
-          <input class="testcase_open_yn form-check-input" type="checkbox" role="switch"/>
-          <label class="form-check-label" for="">테스트케이스 공개</label>
-        </div>
+      <div class="col-sm-1">
+          <input class="testcase_open_yn" type="checkbox" style='align:center; vertical-align: middle;'  role="switch"/>
+      </div>
+      <div class="col-sm-1" style="line-height: 37px; text-align: center;">
+        <i class="fas fa-times badge-soft-danger testcase_check_yn" style="background-color:transparent;"></i>
       </div>
     </div>
 
@@ -124,80 +121,166 @@
   <script defer="defer" src="https://pyscript.net/alpha/pyscript.js"></script>
   <py-env>
     - paths:
-      - /static/python/utils.py
-      - /static/python/utile.py
+      - /static/python/util.py
   </py-env>
   <!-- pyscript -->
   <py-script style='display:none;'>
     from js import document, window 
     import asyncio, json, datetime
-    from utile import *
-
+    from util import *
+    
     tasks = []
     task_list = Element("items")
     template = Element("task-template").select(".task", from_content=True)
-
-
+    
+    
     async def create_question(*args):
+    
+       json_data = {
+          'question_title' : '',
+          'question_level' : '',
+          'question_lang' : '',
+          'question_text' :  '',
+          'question_code' : '',
+          'testcase_list' : []
+       }
+    
+       json_data['question_title'] = document.getElementById("question_title").value
+       json_data['question_level'] = document.querySelector("#question_level").value
+       json_data['question_text'] = document.getElementById("question_text").value
+       json_data['question_code'] = parse_code(Element("code-area"))
 
-      json_data = {
-         'question_title' : '',
-         'question_level' : '',
-         'question_lang' : '',
-         'question_text' :  '',
-         'question_code' : '',
-         'testcase_list' : []
-      }
-
-      json_data['question_title'] = document.getElementById("question_title").value
-      json_data['question_level'] = document.querySelector("#question_level").value
-      if document.querySelector("#question_lang_python").checked :
+       if document.querySelector("#question_lang_python").checked :
           json_data['question_lang'] = 'Python'
-      json_data['question_text'] = document.getElementById("question_text").value
-      json_data['question_code'] = parse_code(Element("code-area"))
 
-      tc_input_list = []
-      tc_output_list = []
-      testcase_open_yn = []
+      
+       print(json_data['question_title'])
+       print(json_data['question_level'])
+       print(json_data['question_lang'])
+       print(json_data['question_text'])
+       print(json_data['question_code'])
 
-      tc_input_list = document.querySelectorAll(".testcase_input")
-      tc_output_list = document.querySelectorAll(".testcase_output")
-      tc_open_yn_list = document.querySelectorAll(".testcase_open_yn")
+       # 유효성 검사
+       if len(json_data['question_title']) == 0:
+          window.alert("문제 타이틀을 입력해주세요!")
+          return
+  
+       if len(json_data['question_level']) == 0:
+          window.alert("문제 난이도를 선택해주세요!")
+          return
 
-      for i in range(len(tc_input_list)):
-         if tc_open_yn_list[i].checked:
-            yn = 'Y'
-         else:
-            yn = 'N'
-         json_data['testcase_list'].append(
-            { 
-               'testcase_input' : tc_input_list[i].value,
-               'testcase_output' : tc_output_list[i].value,
-               'testcase_open_yn' : yn
-            }
-         )
+       if len(json_data['question_lang']) == 0:
+          window.alert("문제 언어를 선택해주세요!")
+          return
 
-      body = json.dumps(json_data)
-      data = await request("http://{{request.get_host}}" + "/question/create", body=body, method="POST")
-      result_json = await data.json()           
-      window.alert(result_json)
+       if len(json_data['question_text']) == 0:
+          window.alert("문제 설명을 입력해주세요!")
+          return
+  
+       if len(json_data['question_code'].strip()) == 0:
+          window.alert("문제 정답 코드를 입력해주세요!")
+          return
+    
+       tc_input_list = document.querySelectorAll(".testcase_input")
+       tc_output_list = document.querySelectorAll(".testcase_output")
+       tc_open_yn_list = document.querySelectorAll(".testcase_open_yn")
+       tc_check_yn_list = document.querySelectorAll(".testcase_check_yn")
+    
+       for i in range(len(tc_input_list)):
 
+          if tc_check_yn_list[i].classList.contains('fa-times'):
+             window.alert("테스트케이스를 확인해주세요")
+             return
 
+          if tc_open_yn_list[i].checked:
+             yn = 'Y'
+          else:
+             yn = 'N'
+          json_data['testcase_list'].append(
+             { 
+                'testcase_input' : tc_input_list[i].value,
+                'testcase_output' : tc_output_list[i].value,
+                'testcase_open_yn' : yn
+             }
+          )
+    
+       body = json.dumps(json_data)
+       data = await request("http://{{request.get_host}}" + "/question/create", body=body, method="POST")
+       result_json = await data.json()           
+
+       if result_json["flag"]:
+          window.alert("저장에 성공하였습니다.")
+          document.location.href='/question/list'
+       else:
+          window.alert(result_json)
+    
+    
     def add_tc(*args):
-      todo_id = f"todo-{len(tasks)}"
-      todo = {
-            "id": todo_id,
-      }
-
-      tasks.append(todo)
-      task_html = template.clone(todo_id, to=task_list)
-      task_list.element.appendChild(task_html.element)
-
-
+       todo_id = f"todo-{len(tasks)}"
+       todo = {
+             "id": todo_id,
+       }
+    
+       tasks.append(todo)
+       task_html = template.clone(todo_id, to=task_list)
+       task_list.element.appendChild(task_html.element)
+    
+    
     def remove_tc(*args):
-      if(len(task_list.element.childNodes) > 1):
+       if(len(task_list.element.childNodes) > 1):
           task_list.element.childNodes[-1].remove()
-
+    
+    async def syntax_check(*args):
+    
+       json_data = {
+          'question_code' : parse_code(Element("code-area"))
+       }      
+    
+       body = json.dumps(json_data)
+       data = await request("http://{{request.get_host}}" + "/question/syntax/check", body=body, method="POST")
+       result_json = await data.json()  
+    
+       if result_json["flag"]:
+          window.alert("정상입니당~")
+       else:  
+          window.alert(result_json["data"])
+    
+    async def tc_check(*args):
+    
+       json_data = {
+          'question_code' : parse_code(Element("code-area")),
+          'testcase_list' : []
+       }
+    
+       tc_input_list = document.querySelectorAll(".testcase_input")
+       tc_output_list = document.querySelectorAll(".testcase_output")
+       tc_check_yn_list = document.querySelectorAll(".testcase_check_yn")
+    
+       for i in range(len(tc_input_list)):
+          json_data['testcase_list'].append(
+             { 
+                'testcase_input' : tc_input_list[i].value,
+                'testcase_output' : tc_output_list[i].value
+             }
+          )
+    
+       body = json.dumps(json_data)
+       data = await request("http://{{request.get_host}}" + "/question/testcase/check", body=body, method="POST")
+       result_json = await data.json()           
+       result_data = result_json["data"]
+       
+       for i in range(len(result_data)):
+          if result_data[i]["flag"]:
+             tc_check_yn_list[i].classList.add("badge-soft-info")
+             tc_check_yn_list[i].classList.add("fa-check")
+             tc_check_yn_list[i].classList.remove("badge-soft-danger")
+             tc_check_yn_list[i].classList.remove("fa-times")
+          else:
+             tc_check_yn_list[i].classList.remove("badge-soft-info")
+             tc_check_yn_list[i].classList.remove("fa-check")
+             tc_check_yn_list[i].classList.add("badge-soft-danger")
+             tc_check_yn_list[i].classList.add("fa-times")
+  
     add_tc()
   </py-script>
 

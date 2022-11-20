@@ -6,27 +6,27 @@ from question.models import UserQuestionMap, Question, Testcase
 from main.models import User
 import datetime as dt
 from django.db import transaction
-from django.core.paginator import Paginator 
-from django.core import serializers 
+from django.core.paginator import Paginator
+from django.core import serializers
 from django.db.models import F, Subquery
 
 # Create your views here.
 def question_list(request):
 
-    page = request.GET.get('page', '1')
-    limit = request.GET.get('limit', '10')
+    page = request.GET.get("page", "1")
+    limit = request.GET.get("limit", "10")
 
-    question_list = Question.objects.annotate(question_save_yn=F('question_map__question_save_yn')).order_by('-question_seq')
-    
+    question_list = Question.objects.annotate(
+        question_save_yn=F("question_map__question_save_yn")
+    ).order_by("-question_seq")
+
     paginator = Paginator(question_list, limit)
 
-    data = {
-        "question_list" : paginator.get_page(page)
-    }
+    data = {"question_list": paginator.get_page(page)}
 
     print(question_list.query)
 
-    #TODO(김금주) 문제 목록 조회 개발 필요 ** 페이징 처리 필요
+    # TODO(김금주) 문제 목록 조회 개발 필요 ** 페이징 처리 필요
     return render(request, "question_list.html", data)
 
 
@@ -36,18 +36,18 @@ def question_create(request):
     if request.method == "GET":
         return render(request, "question_create.html")
     else:
-        #TODO(김금주) 문제 생성 로직 필요
+        # TODO(김금주) 문제 생성 로직 필요
         # 1. 문제 테이블에 문제 저장
         # 2. 배열로 들어온 테스트 케이스 테이블에 테스트 케이스 저장
 
-        body = json.loads(request.body.decode('utf-8'))
+        body = json.loads(request.body.decode("utf-8"))
         question = Question()
         question.question_title = body["question_title"]
         question.question_level = body["question_level"]
         question.question_lang = body["question_lang"]
         question.question_text = body["question_text"]
         question.question_code = body["question_code"]
-        question.user_id = User.objects.get(user_id = 'admin')
+        question.user_id = User.objects.get(user_id="admin")
         question.save()
 
         testcase_list = body["testcase_list"]
@@ -60,13 +60,14 @@ def question_create(request):
             testcase.question_seq = question
 
             testcase.save()
-        
+
         return utils.create_ressult(None, "저장 성공", True)
+
 
 def question_excute(request):
 
     if request.method == "POST":
-        body = json.loads(request.body.decode('utf-8'))
+        body = json.loads(request.body.decode("utf-8"))
 
         question_seq = body["question_seq"]
         question_code = body["question_code"]
@@ -80,8 +81,8 @@ def question_scoring(request):
 
     # 포스트 형식일시 채점 진행
     if request.method == "POST":
-        
-        body = json.loads(request.body.decode('utf-8'))
+
+        body = json.loads(request.body.decode("utf-8"))
 
         question_seq = body["question_seq"]
         question_code = body["question_code"]
@@ -89,13 +90,17 @@ def question_scoring(request):
 
         # 문제 맵핑 테이블이 없으면 새로 생성한다
         try:
-            user_question_map_info = UserQuestionMap.objects.get(question_seq = question_seq, user_id = 'admin') 
+            user_question_map_info = UserQuestionMap.objects.get(
+                question_seq=question_seq, user_id="admin"
+            )
         except UserQuestionMap.DoesNotExist:
             user_question_map_info = UserQuestionMap()
-            user_question_map_info.question_seq = Question.objects.get(question_seq=question_seq)
-            user_question_map_info.user_id = User.objects.get(user_id = 'admin')
-            user_question_map_info.question_correct_yn = 'N'
-            user_question_map_info.question_save_yn = 'N'
+            user_question_map_info.question_seq = Question.objects.get(
+                question_seq=question_seq
+            )
+            user_question_map_info.user_id = User.objects.get(user_id="admin")
+            user_question_map_info.question_correct_yn = "N"
+            user_question_map_info.question_save_yn = "N"
             user_question_map_info.question_submit_count = 0
 
         # 점수
@@ -104,19 +109,27 @@ def question_scoring(request):
         # 100점이 넘으면 정탑 처리
         if percent >= 100:
 
-            #첫 정답이면 제출 카운트 증가
-            if user_question_map_info.question_correct_yn == 'N':
-                user_question_map_info.question_submit_count += 1 
-                
-            user_question_map_info.question_correct_yn = 'Y'
+            # 첫 정답이면 제출 카운트 증가
+            if user_question_map_info.question_correct_yn == "N":
+                user_question_map_info.question_submit_count += 1
+
+            user_question_map_info.question_correct_yn = "Y"
 
             # 정답이면서 제출 시간이 기록 안됫으면 추가
-            if user_question_map_info.question_start_time == None and user_question_map_info.question_end_time == None:
+            if (
+                user_question_map_info.question_start_time == None
+                and user_question_map_info.question_end_time == None
+            ):
                 user_question_map_info.question_start_time = question_start_time
                 user_question_map_info.question_end_time = dt.datetime.now()
             else:
-                prev = user_question_map_info.question_end_time -user_question_map_info.question_start_time
-                now =  dt.datetime.now() - dt.datetime.strptime(question_start_time,"%Y-%m-%d %H:%M:%S.%f")
+                prev = (
+                    user_question_map_info.question_end_time
+                    - user_question_map_info.question_start_time
+                )
+                now = dt.datetime.now() - dt.datetime.strptime(
+                    question_start_time, "%Y-%m-%d %H:%M:%S.%f"
+                )
 
                 # 이미 제출 시간이 기록됫으면 현재 시간과 비교해서 수정
                 if prev > now:
@@ -125,22 +138,60 @@ def question_scoring(request):
 
         # 정답을 못 맞췃으면 제출 카운트 증가
         else:
-            user_question_map_info.question_submit_count += 1 
-        
-                
+            user_question_map_info.question_submit_count += 1
+
         user_question_map_info.save()
 
         print(percent)
-        
+
     return utils.create_ressult(percent, "채점 성공", True)
 
 
 def question(request, question_seq):
 
-    data = {
-        "question" : Question.objects.get(question_seq = question_seq) 
-    }
+    data = {"question": Question.objects.get(question_seq=question_seq)}
 
-    #TODO(김금주) 문제 조회 로직 필요
+    # TODO(김금주) 문제 조회 로직 필요
     # 1. question_seq 변수를 활용하여 문제 조회
     return render(request, "question.html", data)
+
+
+def syntax_check(request):
+    # 포스트 형식일시 코드 문법 검사
+    if request.method == "POST":
+
+        body = json.loads(request.body.decode("utf-8"))
+
+        question_code = body["question_code"]
+
+        flag, result = service.syntax_check(question_code)
+
+        return utils.create_ressult(result, "문법 체크 성공", flag)
+
+
+def testcase_check(request):
+    # 포스트 형식일시 테스트 케이스 검사
+    if request.method == "POST":
+
+        body = json.loads(request.body.decode("utf-8"))
+
+        question_code = body["question_code"]
+        testcase_list = body["testcase_list"]
+
+        flag, result = service.syntax_check(question_code)
+
+        if flag == False:
+            return utils.create_ressult(result, "코드 문법 오류", flag)
+        
+        tc_list = []
+
+        for i in range(len(testcase_list)):
+            testcase = Testcase()
+            testcase.testcase_input = testcase_list[i]["testcase_input"]
+            testcase.testcase_output = testcase_list[i]["testcase_output"]
+            testcase.testcase_seq = i
+            tc_list.append(testcase)
+
+        result,_ = service.scoring_code(question_code, tc_list)
+
+        return utils.create_ressult(result, "테스트케이스 검사 완료", True)
