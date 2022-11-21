@@ -57,7 +57,7 @@
          <div class="form-group">
             <div>문제 정답 코드</div>
             <br>
-            <py-repl auto-generate="false" id ="code-area" > </py-repl>
+            <py-repl id ="code-area" > </py-repl>
             <br>
             <button type="button" class="btn  badge-warning" id="btn_syntax_check" pys-onclick="syntax_check"  style="float: right;">문법 확인</button>
           </div>
@@ -119,6 +119,7 @@
   </template>
 
   <script defer="defer" src="https://pyscript.net/alpha/pyscript.js"></script>
+
   <py-env>
     - paths:
       - /static/python/util.py

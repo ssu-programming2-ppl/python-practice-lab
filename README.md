@@ -8,7 +8,7 @@ Python, Java, C언어 기반의 예제 문제 풀이 및 제작 가능한 코딩
 2) 파이썬으로 기업 코딩테스트를 준비하는 개발자
 
 
-[`service link`](http://http://ssuppl.tk/)
+[`service link`](http://ssuppl.tk/)
 
 # Skill-set
 
@@ -20,10 +20,12 @@ Python, Java, C언어 기반의 예제 문제 풀이 및 제작 가능한 코딩
 - /question
     - [`POST /execute`](#POST-questionexecute)
     - [`POST /scoring`](#POST-questionscoring)
+    - [`POST /create`](#POST-questionscoring)
+    - [`POST /syntax/check`](#POST-questionsyntaxcheck)
+    - [`POST /testcase/check`](#POST-questiontestcasecheck)
 - /board
-    - [`GET /block`](#GET-apicoreblock)
-    - /channel
-        - [`POST /create`](#POST-apicorechannelupdateanchor)
+    - [`POST /create`](#POST-boardcreate)
+
 
 
 
@@ -173,6 +175,100 @@ request body
     "flag": false
 }
 ```
+
+## `POST /question/syntax/check`
+문법 체크 API
+### request
+
+```json
+request body
+
+{
+    "question_code" : "print('test')",
+}
+```
+
+### response
+
+- on success
+
+```json
+{
+    "code": "0000",
+    "data": "",
+    "message": "문법 체크 성공",
+    "flag": true
+}
+```
+- on failure
+
+```json
+{
+    "code": "9999",
+    "data": null,
+    "message": "error message",
+    "flag": false
+}
+```
+
+## `POST /question/testcase/check`
+테스트 케이스 체크 API
+### request
+
+```json
+request body
+
+{
+    "question_code": "x, y = map(int, input().split())\nprint(x + 2)",
+    "testcase_list": [
+        {
+            "testcase_input": "1 2",
+            "testcase_output": "3"
+        },
+        {
+            "testcase_input": "1 4",
+            "testcase_output": "5"
+        },
+    ]
+}
+```
+
+### response
+
+- on success
+
+```json
+{
+    "code": "0000",
+    "data": [
+        {
+            "input": "1 2",
+            "output": "3",
+            "answer": "3",
+            "flag": true
+        },
+        {
+            "input": "1 4",
+            "output": "3",
+            "answer": "5",
+            "flag": false
+        }
+    ],
+    "message": "테스트케이스 검사 완료",
+    "flag": true
+}
+```
+- on failure
+
+```json
+{
+    "code": "9999",
+    "data": null,
+    "message": "error message",
+    "flag": false
+}
+```
+
 
 ## `POST /board/create`
 게시판 생성  API

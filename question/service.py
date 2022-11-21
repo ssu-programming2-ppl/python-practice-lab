@@ -127,7 +127,7 @@ def syntax_check(question_code):
     if platform.system() == "Windows":
         code, output = subprocess.getstatusoutput(f"python -m py_compile {id}\source.py")
     else:
-        code, output = subprocess.getstatusoutput(f"python -m py_compile {id}/source.py")
+        code, output = subprocess.getstatusoutput(f"python3 -m py_compile {id}/source.py")
 
     shutil.rmtree(id)
 
