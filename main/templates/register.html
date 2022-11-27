@@ -14,13 +14,13 @@
     <title>PPL - Sign Up</title>
 
     <!-- Custom fonts for this template-->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    {% comment %} <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css"> {% endcomment %}
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="{% static 'css/sb-admin-2.css' %}?after" rel="stylesheet">
+    <link href="{% static 'css/sb-admin-2.css' %}" rel="stylesheet">
 
 </head>
 
@@ -42,26 +42,26 @@
                                 <div class="form-group">
                                 <input type="text"
                                        class="form-control form-control-user"
-                                       id="exampleInputEmail"
+                                       id="userNickname"
                                        placeholder="닉네임">
                             </div>
                                 <div class="form-group">
-                                    <input type="email" class="form-control form-control-user" id="exampleInputEmail"
+                                    <input type="email" class="form-control form-control-user" id="userEmail"
                                         placeholder="이메일">
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-6 mb-3 mb-sm-0">
                                         <input type="password" class="form-control form-control-user"
-                                            id="exampleInputPassword" placeholder="비밀번호">
+                                            id="userPassword" placeholder="비밀번호">
                                     </div>
                                     <div class="col-sm-6">
                                         <input type="password" class="form-control form-control-user"
-                                            id="exampleRepeatPassword" placeholder="비밀번호 확인">
+                                            id="userPasswordChk" placeholder="비밀번호 확인">
                                     </div>
                                 </div>
-                                <a href="login.html" class="btn btn-primary btn-user btn-block">
+                                <button type = "button" class="btn btn-primary btn-user btn-block" id="btn_register" pys-onclick="register">
                                     Register Account
-                                </a>
+                                </button>
                                 
                             </form>
                             <hr>
@@ -80,15 +80,73 @@
     </div>
 
     <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="../../static/vendor/jquery/jquery.min.js"></script>
+    <script src="../../static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
     <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="../../static/vendor/jquery-easing/jquery.easing.min.js"></script>
 
     <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
+    <script src="../../static/js/sb-admin-2.min.js"></script>
+
+    <script defer="defer" src="https://pyscript.net/alpha/pyscript.js"></script>
+    <py-env>
+        - paths:
+          - ../../static/python/util.py
+    </py-env>
+
+    <!-- pyscript -->
+    <py-script style='display:none;'>
+    from js import document, window 
+    import asyncio, json, datetime
+    from util import *
+        
+    async def register(*args):
+        json_data = {
+            'user_email' : '',
+            'user_password' : '',
+            'user_nickname' : ''
+        }
+
+        json_data['user_nickname'] = document.getElementById("userNickname").value
+        json_data['user_email'] = document.getElementById("userEmail").value
+        json_data['user_password'] = document.getElementById("userPassword").value
+        password_chk = document.getElementById("userPasswordChk").value
+
+        # 유효성 검사
+        if len(json_data['user_nickname']) == 0:
+          window.alert("닉네임을 확인해주세요!")
+          return
+        
+        if len(json_data['user_email']) == 0:
+          window.alert("이메일을 확인해 주세요!")
+          return
+
+        if len(json_data['user_password']) == 0:
+          window.alert("비밀번호를 확인해주세요!")
+          return
+        
+        if len(password_chk) == 0:
+          window.alert("비밀번호를 다시 확인해주세요!")
+          return
+        
+        if json_data['user_password'] != password_chk:
+            window.alert("비밀번호가 맞지 않습니다!")
+            return
+
+
+        body = json.dumps(json_data)
+        data = await request("http://{{request.get_host}}" + "/register", body=body, method="POST")
+        result_json = await data.json()           
+
+        if result_json["flag"]:
+            window.alert("가입되셨습니다. 환영합니다~")
+            document.location.href='/login'
+        else:
+            window.alert(result_json)
+
+    </py-script>
+    
 
 </body>
-
 </html>

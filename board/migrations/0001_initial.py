@@ -16,14 +16,20 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Board',
             fields=[
-                ('board_seq', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='게시판 번호')),
+                ('board_seq', models.BigAutoField(auto_created=True,
+                 primary_key=True, serialize=False, verbose_name='게시판 번호')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('modified_at', models.DateTimeField(auto_now=True)),
-                ('board_title', models.CharField(max_length=150, verbose_name='게시판 제목')),
-                ('board_view_count', models.IntegerField(verbose_name='게시판 조회수 카운팅')),
-                ('borad_link', models.CharField(max_length=150, verbose_name='게시판 링크')),
-                ('board_division', models.CharField(max_length=150, verbose_name='게시판 구분')),
-                ('user_id', models.ForeignKey(db_column='user_id', db_constraint=False, on_delete=django.db.models.deletion.DO_NOTHING, related_name='user_board', to='main.user')),
+                ('board_title', models.CharField(
+                    max_length=150, verbose_name='게시판 제목')),
+                ('board_view_count', models.IntegerField(
+                    verbose_name='게시판 조회수 카운팅')),
+                ('borad_link', models.CharField(
+                    max_length=150, verbose_name='게시판 링크')),
+                ('board_division', models.CharField(
+                    max_length=150, verbose_name='게시판 구분')),
+                ('user_id', models.ForeignKey(db_column='user_id', db_constraint=False,
+                 on_delete=django.db.models.deletion.DO_NOTHING, related_name='user_board', to='main.user')),
             ],
             options={
                 'db_table': 'board_info',

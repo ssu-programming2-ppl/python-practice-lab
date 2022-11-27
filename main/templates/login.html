@@ -1,4 +1,3 @@
-{% load static i18n %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -13,13 +12,14 @@
     <title>PPL - Login</title>
 
     <!-- Custom fonts for this template-->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    {% comment %} <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css"> {% endcomment %}
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
 
     <!-- Custom styles for this template-->
-    <link href="{% static 'css/sb-admin-2.css' %}?after" rel="stylesheet">
+    {% comment %} <link href="{% static 'css/sb-admin-2.css' %}?after" rel="stylesheet"> {% endcomment %}
+    <link href="..\static\css\sb-admin-2.css" rel="stylesheet">
 
 </head>
 
@@ -45,19 +45,19 @@
                                     <form class="user">
                                         <div class="form-group">
                                             <input type="email" class="form-control form-control-user"
-                                                id="exampleInputEmail" aria-describedby="emailHelp"
+                                                id="userEmail" aria-describedby="emailHelp"
                                                 placeholder="Enter Email Address...">
                                         </div>
                                         <div class="form-group">
                                             <input type="password" class="form-control form-control-user"
-                                                id="exampleInputPassword" placeholder="Password">
+                                                id="userPassword" placeholder="Password">
                                         </div>
                                         <div class="form-group">
                                             
                                         </div>
-                                        <a href="index.html" class="btn btn-primary btn-user btn-block">
+                                        <button type="button" class="btn btn-primary btn-user btn-block" id="btn_login" pys-onclick="login">
                                             Login
-                                        </a>                                       
+                                        </button>                                       
                                     </form>
                                     <hr>
                                     <div class="text-center">
@@ -75,7 +75,7 @@
 
     </div>
 
-    <!-- Bootstrap core JavaScript-->
+    {% comment %} <!-- Bootstrap core JavaScript-->
     <script src="./static/vendor/jquery/jquery.min.js"></script>
     <script src="./static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 
@@ -84,7 +84,54 @@
 
     <!-- Custom scripts for all pages-->
     
-    <!--< script src="/static/sb-admin-2.min.js"></script> -->
+    <!--< script src="/static/sb-admin-2.min.js"></script> --> {% endcomment %}
+
+    <script defer="defer" src="https://pyscript.net/alpha/pyscript.js"></script>
+
+    <py-env>
+        - paths:
+          - ../../static/python/util.py
+    </py-env>
+
+    <!-- pyscript -->
+    <py-script style='display:none;'>
+      from js import document, window 
+      import asyncio, json, datetime
+      from util import *
+            
+      async def login(*args):
+
+        json_data = {
+            'user_email' : '',
+            'user_password' : ''
+        }
+
+        print(document.getElementById("userEmail").value)
+        print(document.getElementById("userPassword").value)
+
+        json_data['user_email'] = document.getElementById("userEmail").value
+        json_data['user_password'] = document.getElementById("userPassword").value
+
+        # 유효성 검사
+        if len(json_data['user_email']) == 0:
+          window.alert("이메일을 확인해주세요!")
+          return
+
+        if len(json_data['user_password']) == 0:
+          window.alert("비밀번호를 확인해주세요!")
+          return
+
+        body = json.dumps(json_data)
+        data = await request("http://{{request.get_host}}" + "/login", body=body, method="POST")
+        result_json = await data.json()           
+
+        if result_json["flag"]:
+            window.alert("로그인 성공")
+            document.location.href='/overview'
+        else:
+            window.alert(result_json)
+
+    </py-script>
 
 </body>
 
