@@ -8,7 +8,7 @@ import datetime as dt
 from django.db import transaction
 from django.core.paginator import Paginator
 from django.core import serializers
-from django.db.models import F, Subquery
+from django.db.models import F, Subquery,Q,Case,When,Value
 
 # Create your views here.
 def question_list(request):
@@ -16,10 +16,12 @@ def question_list(request):
     page = request.GET.get("page", "1")
     limit = request.GET.get("limit", "10")
 
-    question_list = Question.objects.annotate(
-        question_save_yn=F("question_map__question_save_yn")
-    ).order_by("-question_seq")
-
+    user_map = UserQuestionMap.objects.filter(user_id='admin').values_list('question_seq',flat=True)
+    question_list = Question.objects.annotate(question_save_yn=Case(
+         When(question_seq__in=user_map, then=F('question_map__question_save_yn')),
+         default=Value('N'),
+     )).order_by('-question_seq')
+   
     paginator = Paginator(question_list, limit)
 
     data = {"question_list": paginator.get_page(page)}

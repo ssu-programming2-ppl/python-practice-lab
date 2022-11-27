@@ -15,7 +15,8 @@ class Question(TimeStampedModel):
     question_text = models.TextField(verbose_name="문제 내용")
     question_code = models.TextField(verbose_name="문제 정답 코드")
     # user_id = models.CharField(max_length=150, verbose_name="사용자(작성자) 아이디")
-    user_id = models.ForeignKey('main.User', db_constraint=False, on_delete=models.DO_NOTHING, db_column="user_id", related_name="user_question")
+    # user_id = models.ForeignKey('main.User', db_constraint=False, on_delete=models.DO_NOTHING, db_column="user_id", related_name="user_question")
+    user_id = models.ManyToManyField('main.User', through='UserQuestionMap')
 
     def __str__(self):
         return str(self.question_seq)
