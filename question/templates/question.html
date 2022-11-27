@@ -46,46 +46,14 @@
             <div class="form-group row">
                <div class="col-sm-9 mb-3 mb-sm-0">
                   <div class="form-outline">
-                     <py-repl auto-generate="false" id ="code-area"></py-repl>
-                     {% comment %} <textarea class="form-control" id="question_code" rows="4" style="resize: none; height : 700px;">
-from collections import deque
-
-m, n = map(int, input().split())
-matrix = [list(map(int, input().split())) for _ in range(n)]
-queue = deque([])
-dx, dy = [-1, 1, 0, 0], [0, 0, -1, 1]
-res = 0
-
-for i in range(n):
-      for j in range(m):
-         if matrix[i][j] == 1:
-            queue.append([i, j])
-
-def bfs():
-      while queue:
-         x, y = queue.popleft()
-         for i in range(4):
-            nx, ny = dx[i] + x, dy[i] + y
-            if 0 <= nx < n and 0 <= ny < m and matrix[nx][ny] == 0:
-                  matrix[nx][ny] = matrix[x][y] + 1
-                  queue.append([nx, ny])
-
-bfs()
-for i in matrix:
-      for j in i:
-         if j == 0:
-            print(-1)
-            exit(0)
-      res = max(res, max(i))
-print(res - 1)
-                     </textarea> {% endcomment %}
+                     <py-repl id ="code-area"></py-repl>
                   </div>
                </div>
                <div class="col-sm-3">
-                  <div class="form-outline">
+                  <div class="form-outline" id='div_excute_result'>
                      <div class="card text-center">
                         <div class="card-body" style="text-align: left;">
-                           <pre class="card-text" style="text-align: left;">테스트 출력값입니다</pre>
+                            코드를 실행하시면 결과를 확인가능합니다
                         </div>
                      </div>
                   </div>
@@ -96,33 +64,82 @@ print(res - 1)
                   <button type="button" class="btn badge-warning" id="excuteButton" pys-onClick="excute_question">코드실행</button>
                </div>
                <div class="col-sm-6">
-                  <button type="button" class="btn badge-warning" id="scoringButton">문제 제출 및 채점</button>
+                  <button type="button" class="btn badge-warning" id="scoringButton" pys-onClick="scoring_question">문제 제출 및 채점</button>
                </div>
             </div>
          </div>
       </div>
    </div>
 </div>
+<template id="card-template">
+   <div class="card text-center">
+      <div class="card-body" style="text-align: left;">
+         테스트 출력값입니다
+      </div>
+   </div>
+</template>
 <py-env>
    - paths:
-     - /static/python/utils.py
+     - /static/python/util.py
  </py-env>
 <py-script style='display:none;'>
    from js import document, window 
    import asyncio, json, datetime
    import json
-   from utils import request, parse_code
+   from util import *
+
+   question_seq = "{{request.path}}".replace("question","")
+   question_seq = question_seq.replace("/","")
+
+   div_excute_result = Element("div_excute_result")
+   template = Element("card-template").select(".card", from_content=True)
    
    async def excute_question(e):
 
-      {% comment %} question_code = document.getElementById("question_code").value {% endcomment %}
-      window.console.log(parse_code(Element("code-area")))
       question_code = parse_code(Element("code-area"))
-      body = json.dumps({"question_code": question_code, "question_seq": 4, "question_start_time" : question_start_time})
+      body = json.dumps({"question_code": question_code, "question_seq": question_seq, "question_start_time" : question_start_time})
+
+      data = await request("http://{{request.get_host}}" + "/question/excute", body=body, method="POST")
+      result_json = await data.json()
+      result_data = result_json['data']           
+
+      div_excute_result.element.innerHTML = '';
+
+      for i in range(len(result_data)):
+         div_html = template.clone(f"excute_result_{i}", to=div_excute_result)
+
+         div_content = div_html.element.firstElementChild.innerHTML = get_html(result_data[i]["input"], result_data[i]["output"], result_data[i]["answer"], result_data[i]["flag"])
+
+         div_excute_result.element.appendChild(div_html.element)
+
+   def get_html(input, output, answer, flag):
+
+      div_str = 'pre'
+      t1 = '/'
+
+      html = ''
+      html = f'{html}<{div_str}>입력값 : {input}<{t1}{div_str}>\n'
+      html = f'{html}<{div_str}>출력값 : {output}<{t1}{div_str}>\n'
+      html = f'{html}<{div_str}>정답값 : {answer}<{t1}{div_str}>\n'
+      html = f'{html}<{div_str}>정답여부 : {flag}<{t1}{div_str}>\n'
+
+      window.console.log(html)
+      return html
+
+   async def scoring_question(e):      
+      question_code = parse_code(Element("code-area"))
+      body = json.dumps({"question_code": question_code, "question_seq": question_seq, "question_start_time" : question_start_time})
 
       data = await request("http://{{request.get_host}}" + "/question/scoring", body=body, method="POST")
-      result_json = await data.json()           
-      window.alert(f"{result_json['data']} 점")
+      result_json = await data.json()
+      score = result_json['data']
+
+      
+      if score == 100:
+         window.alert("정답입니다.")      
+         document.location.href='/question/list'
+      else:
+         window.alert(f"오답입니다 : {score}")      
 
    question_start_time = str(datetime.datetime.now())
    </py-script>
