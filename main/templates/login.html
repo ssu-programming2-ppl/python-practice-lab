@@ -109,15 +109,15 @@
         print(document.getElementById("userEmail").value)
         print(document.getElementById("userPassword").value)
 
-        json_data['user_email'] = document.getElementById("userEmail").value
-        json_data['user_password'] = document.getElementById("userPassword").value
+        json_data['email'] = document.getElementById("userEmail").value
+        json_data['password'] = document.getElementById("userPassword").value
 
         # 유효성 검사
-        if len(json_data['user_email']) == 0:
+        if len(json_data['email']) == 0:
           window.alert("이메일을 확인해주세요!")
           return
 
-        if len(json_data['user_password']) == 0:
+        if len(json_data['password']) == 0:
           window.alert("비밀번호를 확인해주세요!")
           return
 
