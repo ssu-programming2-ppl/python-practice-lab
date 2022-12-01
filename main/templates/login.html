@@ -1,3 +1,5 @@
+{% load static i18n %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -61,7 +63,7 @@
                                     </form>
                                     <hr>
                                     <div class="text-center">
-                                        <a class="small" href="register.html">Create an Account!</a>
+                                        <a class="small" href="{% url 'register' %}">Create an Account!</a>
                                     </div>
                                 </div>
                             </div>
@@ -74,6 +76,8 @@
         </div>
 
     </div>
+    <input type="hidden" id="next_url" name="next" value="{{ next }}">
+
 
     {% comment %} <!-- Bootstrap core JavaScript-->
     <script src="./static/vendor/jquery/jquery.min.js"></script>
@@ -90,7 +94,7 @@
 
     <py-env>
         - paths:
-          - ../../static/python/util.py
+            - ../../static/python/util.py
     </py-env>
 
     <!-- pyscript -->
@@ -103,14 +107,16 @@
 
         json_data = {
             'user_email' : '',
-            'user_password' : ''
+            'user_password' : '',
+            'next' : ''
         }
 
-        print(document.getElementById("userEmail").value)
-        print(document.getElementById("userPassword").value)
+        #print(document.getElementById("userEmail").value)
+        #print(document.getElementById("userPassword").value)
 
         json_data['email'] = document.getElementById("userEmail").value
         json_data['password'] = document.getElementById("userPassword").value
+        json_data['next'] = document.getElementById("next_url").value
 
         # 유효성 검사
         if len(json_data['email']) == 0:
@@ -122,14 +128,16 @@
           return
 
         body = json.dumps(json_data)
+
         data = await request("http://{{request.get_host}}" + "/login", body=body, method="POST")
         result_json = await data.json()           
 
         if result_json["flag"]:
             window.alert("로그인 성공")
-            document.location.href='/overview'
+            #document.location.href='/overview'
+            document.location.href= result_json["data"]
         else:
-            window.alert(result_json)
+            window.alert(result_json) 
 
     </py-script>
 

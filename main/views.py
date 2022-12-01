@@ -2,9 +2,11 @@ from django.shortcuts import render, redirect
 import json
 from core import utils
 from main.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
-
+from django.contrib.auth.decorators import login_required
+import sys
+sys.setrecursionlimit(10**7)
 # Create your views here.
 
 
@@ -15,30 +17,34 @@ def index(request):
 
 def login_proc(request):
     if request.method == "GET":
-        return render(request, "login.html")
+        try:
+            next = request.GET['next']
+            next = str(next).split('//')[0]
+            return render(request, 'login.html', {"next": next})
+        except:
+            return render(request, 'login.html', {"next": 'overview'})
     else:
-
         body = json.loads(request.body.decode('utf-8'))
         # user = User()
         username = body["email"]
         password = body["password"]
+        next = body["next"]
 
         print(username)
         print(password)
+        print(next)
 
         user = authenticate(email=username, password=password)
-        print(user)
         if user is not None:
-            login(request, user)     
-            return utils.create_ressult(None, "로그인 성공", True)   
+            login(request, user)
+            return utils.create_ressult(next, "로그인 성공", True)
 
         return utils.create_ressult(None, "아이디를 확인해주세요", False)
-        # try:
-        #     is_exist_user = User.objects.get(pk=user.user_id)
-        #     print(is_exist_user.pk)
-        #     return utils.create_ressult(None, "로그인 성공", True)
-        # except User.DoesNotExist:
-        #     return utils.create_ressult(None, "아이디를 확인해주세요", False)
+
+
+def logout(request):
+    logout(request)
+    return render(request, "login.html")
 
 
 def register(request):
@@ -62,5 +68,20 @@ def register(request):
             return utils.create_ressult(None, "회원가입 성공", True)
 
 
+@login_required(login_url='/login')
 def overview(request):
     return render(request, "overview.html")
+
+
+def handler404(request, exception, template_name="404.html"):
+    response = render(template_name)
+    response.status_code = 404
+    return response
+
+
+def handler500(request, *args, **argv):
+    return render(request, '500.html', status=500)
+
+
+def handler403(request, *args, **argv):
+    return render(request, '403.html', status=403)
