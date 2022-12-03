@@ -56,4 +56,4 @@ class UserQuestionMap(TimeStampedModel):
     question_rating = models.IntegerField(null=True, verbose_name="문제 별점")
 
     def __str__(self):
-        return self.question_seq
+        return str(self.question_seq)

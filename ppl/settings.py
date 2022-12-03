@@ -144,4 +144,4 @@ AUTH_USER_MODEL = 'main.User'
 LOGOUT_REDIRECT_URL = '/login'
 
 
-DEBUG = False
+DEBUG = True

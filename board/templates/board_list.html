@@ -32,15 +32,17 @@
                       </tr>
                     </thead>
                     <tbody>
+                      {% for youtube in youtube_list %}
                       <tr>
-                        <td>1</td>
-                        <td>유튜브</td>
+                        <td>{{youtube.board_seq}}</td>
+                        <td>{{youtube.board_division}}</td>
                         <td>
-                          <a href="https://www.naver.com">파이썬 기초</a>
+                          <a href={{youtube.borad_link}}>{{youtube.board_title}}</a>
                         </td>
-                        <td>2011/04/25</td>
-                        <td>61</td>
+                        <td>{{youtube.modified_at}}</td>
+                        <td>{{youtube.board_view_count}}</td>
                       </tr>
+                      {% endfor %}
 
                     </tbody>
                   </table>
@@ -71,24 +73,17 @@
                       </tr>
                     </thead>
                     <tbody>
+                      {% for blog in blog_list %}
                       <tr>
-                        <td>1</td>
-                        <td>블로그</td>
+                        <td>{{blog.board_seq}}</td>
+                        <td>{{blog.board_division}}</td>
                         <td>
-                          <a href="https://www.naver.com">파이썬 기초</a>
+                          <a href={{blog.borad_link}}>{{blog.board_title}}</a>
                         </td>
-                        <td>2011/04/25</td>
-                        <td>61</td>
+                        <td>{{blog.modified_at}}</td>
+                        <td>{{blog.board_view_count}}</td>
                       </tr>
-                      <tr>
-                        <td>1</td>
-                        <td>블로그</td>
-                        <td>
-                          <a href="https://www.naver.com">파이썬 중급</a>
-                        </td>
-                        <td>2011/04/25</td>
-                        <td>61</td>
-                      </tr>
+                      {% endfor %}
 
                     </tbody>
                   </table>
@@ -96,15 +91,13 @@
                     <div class="col-sm-10">
                       <div class="">
                         <ul class="pagination mb-sm-0">
+
+                          {% for page_num in blog_list.paginator.page_range %}
                           <li class="page-item active">
-                            <a href="#" class="page-link">1</a>
+                            <a href="?page={{page_num}}" class="page-link">{{page_num}}</a>
                           </li>
-                          <li class="page-item">
-                            <a href="#" class="page-link">2</a>
-                          </li>
-                          <li class="page-item">
-                            <a href="#" class="page-link">3</a>
-                          </li>
+                          {% endfor %}
+
                         </ul>
                       </div>
                     </div>
