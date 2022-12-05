@@ -18,6 +18,7 @@ Python, Java, C언어 기반의 예제 문제 풀이 및 제작 가능한 코딩
 
 ## index /
 - /question
+    - [`GET /save`](#GET-questionsave)
     - [`POST /execute`](#POST-questionexecute)
     - [`POST /scoring`](#POST-questionscoring)
     - [`POST /create`](#POST-questionscoring)
@@ -28,7 +29,39 @@ Python, Java, C언어 기반의 예제 문제 풀이 및 제작 가능한 코딩
 
 
 
+## `GET /save`
+문제 저장(즐겨찿기) API
 
+### request
+
+request url
+
+```
+/save/{question_seq}
+```
+
+### response
+
+- on success
+
+```json
+{
+    "code": "0000",
+    "data": "",
+    "message": "저장(즐겨찾기) 완료",
+    "flag": true
+}
+```
+- on failure
+
+```json
+{
+    "code": "9999",
+    "data": null,
+    "message": "error message",
+    "flag": false
+}
+```
 
 ## `POST /question/execute`
 코드 실행  API

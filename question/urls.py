@@ -11,4 +11,5 @@ urlpatterns = [
     path("syntax/check", views.syntax_check, name="syntax_check"),
     path("testcase/check", views.testcase_check, name="testcase_check"),
     path("<int:question_seq>/", views.question, name="question"),
+    path("save/<int:question_seq>/", views.question_save, name="question_save"),
 ]

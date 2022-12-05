@@ -19,13 +19,15 @@ def question_list(request):
     page = request.GET.get("page", "1")
     limit = request.GET.get("limit", "10")
 
-    user_map = UserQuestionMap.objects.filter(
-        user_id='admin').values_list('question_seq', flat=True)
-    question_list = Question.objects.annotate(question_save_yn=Case(
-        When(question_seq__in=user_map, then=F(
-            'question_map__question_save_yn')),
-        default=Value('N'),
-    )).order_by('-question_seq')
+    user_map = UserQuestionMap.objects.filter(user_id="admin").values_list(
+        "question_seq", flat=True
+    )
+    question_list = Question.objects.annotate(
+        question_save_yn=Case(
+            When(question_seq__in=user_map, then=F("question_map__question_save_yn")),
+            default=Value("N"),
+        )
+    ).order_by("-question_seq")
 
     paginator = Paginator(question_list, limit)
 
@@ -37,7 +39,7 @@ def question_list(request):
     return render(request, "question_list.html", data)
 
 
-@login_required(login_url='/login')
+@login_required(login_url="/login")
 @transaction.atomic()
 def question_create(request):
 
@@ -72,7 +74,7 @@ def question_create(request):
         return utils.create_ressult(None, "저장 성공", True)
 
 
-@login_required(login_url='/login')
+@login_required(login_url="/login")
 def question_excute(request):
 
     if request.method == "POST":
@@ -86,13 +88,15 @@ def question_excute(request):
         return utils.create_ressult(result, "코드 실행 성공", True)
 
 
-@login_required(login_url='/login')
+@login_required(login_url="/login")
 def question_scoring(request):
 
     # 포스트 형식일시 채점 진행
     if request.method == "POST":
 
         body = json.loads(request.body.decode("utf-8"))
+
+        logined_user = request.user
 
         question_seq = body["question_seq"]
         question_code = body["question_code"]
@@ -101,14 +105,14 @@ def question_scoring(request):
         # 문제 맵핑 테이블이 없으면 새로 생성한다
         try:
             user_question_map_info = UserQuestionMap.objects.get(
-                question_seq=question_seq, user_id="admin"
+                question_seq=question_seq, user_id=logined_user
             )
         except UserQuestionMap.DoesNotExist:
             user_question_map_info = UserQuestionMap()
             user_question_map_info.question_seq = Question.objects.get(
                 question_seq=question_seq
             )
-            user_question_map_info.user_id = User.objects.get(user_id="admin")
+            user_question_map_info.user_id = User.objects.get(user_id=logined_user)
             user_question_map_info.question_correct_yn = "N"
             user_question_map_info.question_save_yn = "N"
             user_question_map_info.question_submit_count = 0
@@ -166,7 +170,7 @@ def question(request, question_seq):
     return render(request, "question.html", data)
 
 
-@login_required(login_url='/login')
+@login_required(login_url="/login")
 def syntax_check(request):
     # 포스트 형식일시 코드 문법 검사
     if request.method == "POST":
@@ -180,7 +184,7 @@ def syntax_check(request):
         return utils.create_ressult(result, "문법 체크 성공", flag)
 
 
-@login_required(login_url='/login')
+@login_required(login_url="/login")
 def testcase_check(request):
     # 포스트 형식일시 테스트 케이스 검사
     if request.method == "POST":
@@ -207,3 +211,27 @@ def testcase_check(request):
         result, _ = service.scoring_code(question_code, tc_list)
 
         return utils.create_ressult(result, "테스트케이스 검사 완료", True)
+
+
+@login_required(login_url="/login")
+def question_save(request, question_seq):
+
+    logined_user = request.user
+    question = Question.objects.get(question_seq=question_seq)
+    user_map, _ = UserQuestionMap.objects.get_or_create(
+        user_id=logined_user, question_seq=question
+    )
+
+    if user_map.question_save_yn == "":
+        user_map.question_save_yn = "Y"
+        user_map.question_correct_yn = "N"
+
+    elif user_map.question_save_yn == "N":
+        user_map.question_save_yn = "Y"
+    else:
+        user_map.question_save_yn = "N"
+
+    print(user_map.question_correct_yn)
+    user_map.save()
+
+    return utils.create_ressult("", "저장(즐겨찾기) 완료", True)
