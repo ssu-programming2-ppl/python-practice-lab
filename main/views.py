@@ -73,6 +73,11 @@ def overview(request):
     return render(request, "overview.html")
 
 
+@login_required(login_url='/login')
+def dashboard(request):
+    return render(request, "dashboard.html")
+
+
 def handler404(request, exception, template_name="404.html"):
     response = render(template_name)
     response.status_code = 404
@@ -85,3 +90,10 @@ def handler500(request, *args, **argv):
 
 def handler403(request, *args, **argv):
     return render(request, '403.html', status=403)
+
+
+def test(request):
+    if request.method == "GET":
+        return render(request, "test.html")
+    else:
+        return render(request, "test.html")

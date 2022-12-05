@@ -15,7 +15,7 @@
       <h1>문제 생성</h1>
       <div class="card shadow mb-4">
         <div class="card-body">
-          <div>문제 사용 언어 선택</div>
+          <div><h5><strong>문제 사용 언어 선택<strong></h5></div>
           <br>
           <div class="form-group row">
             <div class="col-sm-4">
@@ -36,7 +36,7 @@
               <input type="text" class="form-control form-control-user" id="question_title" placeholder="문제명을 입력해주세요">
             </div>
             <div class="col-sm-3">              
-            <select class="selectpicker" id= "question_level">
+            <select class="selectpicker" id="question_level">
                <option id="high">상</option>
                <option id="middle">중</option>
                <option id="row">하</option>
@@ -84,13 +84,13 @@
           <!-- end -->
 
           <div class="form-group row">
-            <div class="col-sm-11 mb-3 mb-sm-0"></div>
-            <div class="col-sm-1" style="margin-left:auto;">
-              <button type="button" class="btn badge badge-warning" id="add_btn" pys-onclick="add_tc">
-                +
+            <div class="col-sm-10 mb-3 mb-sm-0"></div>
+            <div class="col-sm-2" style="text-align: right;">
+              <button type="button" class="btn  btn-outline-info" id="add_btn" pys-onclick="add_tc">
+                <i class="fas fa-plus"></i>
               </button>
-              <button type="button" class="btn badge badge-warning" id="remove_btn" pys-onclick="remove_tc">
-                -
+              <button type="button" class="btn btn-outline-danger" id="remove_btn" pys-onclick="remove_tc">
+                <i class="fas fa-minus"></i>
               </button>
             </div>
           </div>
@@ -108,17 +108,21 @@
       <div class="col-sm-5">
         <textarea class="form-control testcase_output"  style="resize: none;" rows="1" placeholder="출력값" required></textarea>
       </div>
-      <div class="col-sm-1">
-          <input class="testcase_open_yn" type="checkbox" style='align:center; vertical-align: middle;'  role="switch"/>
+      <div class="col-sm-1" style="text-align: center;">
+          <input class="testcase_open_yn" style="width: 30px; height: 30px; background-color: black" type="checkbox" id="checkboxNoLabel" />
       </div>
       <div class="col-sm-1" style="line-height: 37px; text-align: center;">
-        <i class="fas fa-times badge-soft-danger testcase_check_yn" style="background-color:transparent;"></i>
+        <button type="button" class="btn btn-light" data-toggle="popover" title="Popover title" data-content="Lorem Ipsum Dolor Lorem Ipsum Dolor Lorem Ipsum Dolor"><i class="fas fa-times badge-soft-danger testcase_check_yn" style="background-color:transparent;"></i></button>
       </div>
     </div>
 
   </template>
 
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script defer="defer" src="https://pyscript.net/alpha/pyscript.js"></script>
+
 
   <py-env>
     - paths:
@@ -126,7 +130,8 @@
   </py-env>
   <!-- pyscript -->
   <py-script style='display:none;'>
-    from js import document, window 
+    from js import document, window
+    import js
     import asyncio, json, datetime
     from util import *
     
@@ -225,10 +230,12 @@
        tasks.append(todo)
        task_html = template.clone(todo_id, to=task_list)
        task_list.element.appendChild(task_html.element)
+       js.init()
     
     
     def remove_tc(*args):
-       if(len(task_list.element.childNodes) > 1):
+       if(len(tasks) > 1):
+          tasks.pop()
           task_list.element.childNodes[-1].remove()
     
     async def syntax_check(*args):
@@ -282,6 +289,8 @@
              tc_check_yn_list[i].classList.add("badge-soft-danger")
              tc_check_yn_list[i].classList.add("fa-times")
   
+
+
     add_tc()
   </py-script>
 
