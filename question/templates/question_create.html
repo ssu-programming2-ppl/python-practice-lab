@@ -15,20 +15,20 @@
       <h1>문제 생성</h1>
       <div class="card shadow mb-4">
         <div class="card-body">
-          <div><h5><strong>문제 사용 언어 선택<strong></h5></div>
+          <div><h5><strong>문제 사용 언어 선택</strong></h5></div>
           <br>
           <div class="form-group row">
             <div class="col-sm-4">
               <input class="" type="radio" name="inlineRadioOptions" id="question_lang_python" checked value="Python"/>
-              <label class="" for="inlineRadio1">Python</label>
+              <label class="" for="inlineRadio1"><strong>Python</strong></label>
             </div>
             <div class="col-sm-4">
               <input class="" type="radio" name="inlineRadioOptions" id="question_lang" value="C" disabled="disabled"/>
-              <label class="" for="inlineRadio1">C</label>
+              <label class="" for="inlineRadio1"><strong>C</strong></label>
             </div>
             <div class="col-sm-4">
               <input class="" type="radio" name="inlineRadioOptions" id="question_lang" value="Java" disabled="disabled"/>
-              <label class="" for="inlineRadio1">Java</label>
+              <label class="" for="inlineRadio1"><strong>Java</strong></label>
             </div>
           </div>
           <div class="form-group row">
@@ -48,22 +48,22 @@
             </div>
           </div>
           <div class="form-group">
-            <div>문제 설명</div>
+            <div><strong>문제 설명</strong></div>
             <br>
             <div class="form-outline">
               <textarea class="form-control" id="question_text" rows="4"></textarea>
             </div>
           </div>
          <div class="form-group">
-            <div>문제 정답 코드</div>
+            <div><strong>문제 정답 코드</strong></div>
             <br>
             <py-repl id ="code-area" > </py-repl>
             <br>
-            <button type="button" class="btn  badge-warning" id="btn_syntax_check" pys-onclick="syntax_check"  style="float: right;">문법 확인</button>
+            <button type="button" class="btn badge-warning" id="btn_syntax_check" pys-onclick="syntax_check"  style="float: right;">문법 확인</button>
           </div>
           <br>
           <div class="form-group">
-            <div>테스트 케이스</div>
+            <div><strong>테스트 케이스</strong></div>
             <button type="button" class="btn badge-warning" id="btn_tc_check" pys-onclick="tc_check"  style="float: right;">테스트 케이스 확인</button>
             <br>
             <br>
@@ -112,7 +112,7 @@
           <input class="testcase_open_yn" style="width: 30px; height: 30px; background-color: black" type="checkbox" id="checkboxNoLabel" />
       </div>
       <div class="col-sm-1" style="line-height: 37px; text-align: center;">
-        <button type="button" class="btn btn-light" data-toggle="popover" title="Popover title" data-content="Lorem Ipsum Dolor Lorem Ipsum Dolor Lorem Ipsum Dolor"><i class="fas fa-times badge-soft-danger testcase_check_yn" style="background-color:transparent;"></i></button>
+        <button type="button" class="btn btn-light testcase_output_popover" data-toggle="popover" title="결과값"><i class="fas fa-times badge-soft-danger testcase_check_yn" style="background-color:transparent;"></i></button>
       </div>
     </div>
 
@@ -263,6 +263,7 @@
        tc_input_list = document.querySelectorAll(".testcase_input")
        tc_output_list = document.querySelectorAll(".testcase_output")
        tc_check_yn_list = document.querySelectorAll(".testcase_check_yn")
+       tc_output_popover_list = document.querySelectorAll(".testcase_output_popover")
     
        for i in range(len(tc_input_list)):
           json_data['testcase_list'].append(
@@ -283,11 +284,16 @@
              tc_check_yn_list[i].classList.add("fa-check")
              tc_check_yn_list[i].classList.remove("badge-soft-danger")
              tc_check_yn_list[i].classList.remove("fa-times")
+             #tc_output_popover_list[i].removeAttribute('data-toggle')
+             
           else:
              tc_check_yn_list[i].classList.remove("badge-soft-info")
              tc_check_yn_list[i].classList.remove("fa-check")
              tc_check_yn_list[i].classList.add("badge-soft-danger")
              tc_check_yn_list[i].classList.add("fa-times")
+             #tc_output_popover_list[i].setAttribute('data-toggle','popover')
+
+          tc_output_popover_list[i].setAttribute('data-content',result_data[i]["output"])
   
 
 
