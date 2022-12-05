@@ -18,6 +18,11 @@
         <link href="/static/css/sb-admin-2.css" rel="stylesheet">
         <script src="https://kit.fontawesome.com/f5d2681fa6.js" crossorigin="anonymous"></script>
         <script defer src="https://pyscript.net/alpha/pyscript.js"></script>
+         <!-- 차트 링크 -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+
+
+
         <title>
             {% block page_title %}{% endblock %}
         | PPL</title>
@@ -56,7 +61,14 @@
         <!-- Page level custom scripts -->
         <script src="/static/js/demo/chart-area-demo.js"></script>
         <script src="/static/js/demo/chart-pie-demo.js"></script>
-        <style type="text/css">
+
+    <script>
+            function init(){
+            $(".btn").popover();
+            }
+        </script>
+
+       <style type="text/css">
 .project-list-table {
     border-collapse: separate;
     border-spacing: 0 12px
