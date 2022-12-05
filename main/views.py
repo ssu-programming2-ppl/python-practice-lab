@@ -124,8 +124,8 @@ def overview(request):
 
 
 @login_required(login_url='/login')
-def overview(request):
-    return render(request, "overview.html")
+def dashboard(request):
+    return render(request, "dashboard.html")
 
 
 def handler404(request, exception, template_name="404.html"):
