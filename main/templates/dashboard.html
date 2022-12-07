@@ -13,8 +13,7 @@
 
             <h2>Dashboard</h2>
                 <div class="card-header py-3">
-                    <div class="row">
-                        <div class="card-body col-lg-9 p-10">
+                        <div class="card-body ">
                            <div class="row align-items-center ml-5">
                                         <div class="card mb-4 mt-5 py-3 col-3">
                                             <div class="card-body">
@@ -26,10 +25,10 @@
                                             </div>
                                         </div>
 
-                                        <div class="card mb-4 mt-5 py-3 col-3 ml-3">
+                                        <div class="card mb-4 mt-5 py-3 col-4 ml-3">
                                             <div class="card-body">
                                                     현재 랭킹
-                                                    <a href="#" class="btn btn-success btn-circle btn-lg">
+                                                    <a href="#" class="btn btn-info btn-circle btn-lg">
                                                         <i class="fa-solid fa-ranking-star"></i>
                                                     </a>
                                                 <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">N위</div>
@@ -40,7 +39,7 @@
                                         <div class="card mb-4 mt-5 py-3 col-4 ml-3">
                                             <div class="card-body">
                                                     평균 문제 풀이 시간
-                                                    <a href="#" class="btn btn-success btn-circle btn-lg">
+                                                    <a href="#" class="btn btn-secondary btn-circle btn-lg">
                                                         <i class="fa-regular fa-clock"></i>
                                                     </a>
                                                 <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">______분</div>
@@ -49,15 +48,10 @@
                                         </div>
 
 
-
                                     <div class="container">
                                         <canvas id="myChart"></canvas>
                                     </div>
-
-
-
-
-                                    <div class="card shadow mb-4 col-10">
+                                    <div class="card shadow mb-4 col-12">
                                         <div class="card-header py-3">최근 해결한 문제</div>
                                         <div class="card-body">
                                             <div class="table-responsive">
@@ -83,7 +77,7 @@
                                                      <tr>
                                                         <td><a href="https://www.naver.com">문제 C</a></td>
                                                         <td>서OO</td>
-                                                        <td>__a___분</td>
+                                                        <td>_____분</td>
                                                     </tr>
                                                     </tbody>
                                                 </table>
@@ -93,15 +87,11 @@
 
 
 
-                            </div>
                         </div>
                     </div>
              </div>
     </div>
-            <!-- End of Main Content -->
-        {% endblock content %}
-
- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
     crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
@@ -110,7 +100,6 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous"></script>
-    
   <!-- 차트 -->
   <script>
     var ctx = document.getElementById('myChart').getContext('2d');
@@ -132,3 +121,5 @@
       options: {}
     });
   </script>
+            <!-- End of Main Content -->
+        {% endblock content %}

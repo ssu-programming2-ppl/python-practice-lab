@@ -12,48 +12,11 @@
         <!-- End of Topbar -->
         <div class="container-fluid">
 
-            <!-- Page Heading -->
-            <h1 class="h3 mb-2 text-gray-800">강의 영상</h1>
-            <p class="mb-4">파이썬 공부에 도움이 되는 강의 영상 목록</p>
-
-            <!-- DataTales Example -->
-            <div class="card shadow mb-4">
-              <div class="card-header py-3"></div>
-              <div class="card-body">
-                <div class="table-responsive">
-                  <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                    <thead>
-                      <tr class="text-center">
-                        <th>번호</th>
-                        <th>구분</th>
-                        <th>내용</th>
-                        <th>등록일</th>
-                        <th>조회수</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td>1</td>
-                        <td>유튜브</td>
-                        <td>
-                          <a href="https://www.naver.com">파이썬 기초</a>
-                        </td>
-                        <td>2011/04/25</td>
-                        <td>61</td>
-                      </tr>
-
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-
-          </div>
           <div class="container-fluid">
 
             <!-- Page Heading -->
-            <h1 class="h3 mb-2 text-gray-800">블로그</h1>
-            <p class="mb-4">파이썬 공부에 도움이 되는 블로그 목록</p>
+            <h1 class="h3 mb-2 text-gray-800">자료실</h1>
+            <p class="mb-4">파이썬 공부에 도움이 되는 사이트 목록</p>
 
             <!-- DataTales Example -->
             <div class="card shadow mb-4">
@@ -71,40 +34,28 @@
                       </tr>
                     </thead>
                     <tbody>
+                      {% for board in board_list %}
                       <tr>
-                        <td>1</td>
-                        <td>블로그</td>
+                        <td>{{board.board_seq}}</td>
+                        <td>{{board.board_division}}</td>
                         <td>
-                          <a href="https://www.naver.com">파이썬 기초</a>
+                          <a href="{{board.board_link}}">{{board.board_title}}</a>
                         </td>
-                        <td>2011/04/25</td>
-                        <td>61</td>
+                        <td>{{board.created_at}}</td>
+                        <td>{{board.board_view_count}}</td>
                       </tr>
-                      <tr>
-                        <td>1</td>
-                        <td>블로그</td>
-                        <td>
-                          <a href="https://www.naver.com">파이썬 중급</a>
-                        </td>
-                        <td>2011/04/25</td>
-                        <td>61</td>
-                      </tr>
-
+                      {% endfor %}
                     </tbody>
                   </table>
                   <div class="row g-0 align-items-center pb-4">
                     <div class="col-sm-10">
                       <div class="">
                         <ul class="pagination mb-sm-0">
-                          <li class="page-item active">
-                            <a href="#" class="page-link">1</a>
-                          </li>
+                          {% for i in board_list.paginator.page_range %}
                           <li class="page-item">
-                            <a href="#" class="page-link">2</a>
+                            <a href="?page={{i}}" class="page-link badge-warning">{{i}}</a>
                           </li>
-                          <li class="page-item">
-                            <a href="#" class="page-link">3</a>
-                          </li>
+                          {% endfor %}
                         </ul>
                       </div>
                     </div>
