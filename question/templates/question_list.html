@@ -98,21 +98,11 @@
                 <div class="col-sm-6">
                     <div class="float-sm-end">
                         <ul class="pagination mb-sm-0">
-                            <li class="page-item  ">
-                                <a href="#" class="page-link badge-warning">1</a>
-                            </li>
+                            {% for i in question_list.paginator.page_range %}
                             <li class="page-item">
-                                <a href="#" class="page-link badge-warning">2</a>
+                              <a href="?page={{i}}" class="page-link badge-warning">{{i}}</a>
                             </li>
-                            <li class="page-item">
-                                <a href="#" class="page-link badge-warning">3</a>
-                            </li>
-                            <li class="page-item">
-                                <a href="#" class="page-link badge-warning">4</a>
-                            </li>
-                            <li class="page-item">
-                                <a href="#" class="page-link badge-warning ">5</a>
-                            </li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>

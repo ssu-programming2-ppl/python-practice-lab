@@ -5,6 +5,7 @@ from core import utils
 from board.models import Board
 from main.models import User
 from django.db import transaction
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -12,10 +13,17 @@ from django.db import transaction
 def board_list(request):
 
     page = request.GET.get('page', '1')
-    limit = request.GET.get('page', '10')
+    limit = request.GET.get('limit', '10')
 
-    # TODO(김금주) 게시판 목록 조회 개발 필요 ** 페이징 처리 필요
-    return render(request, "board_list.html")
+    board_list = Board.objects.all().order_by("-board_seq")
+
+    board_paginator = Paginator(board_list, limit)
+
+    data = {
+        "board_list": board_paginator.get_page(page),
+    }
+
+    return render(request, "board_list.html", data)
 
 
 @login_required(login_url='/login')

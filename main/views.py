@@ -3,7 +3,9 @@ import json
 from core import utils
 from main.models import User
 from question.models import UserQuestionMap, Question
-from django.db.models import F, Case, When, Value,Sum
+from django.db.models import F, Case, When, Value,Sum,ExpressionWrapper, Func, Q, Window,Avg
+from django.db.models.functions import Abs, Rank, RowNumber
+from question.models import UserQuestionMap
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
@@ -125,7 +127,39 @@ def overview(request):
 
 @login_required(login_url='/login')
 def dashboard(request):
-    return render(request, "dashboard.html")
+
+    correct_cnt = UserQuestionMap.objects.filter(user_id = request.user, question_correct_yn='Y').count()
+
+    user_list = User.objects.annotate(
+        question_submit_count=Sum('user_map__question_submit_count'),
+        user_rank=Window(
+		expression=Rank(), 
+		order_by=F('question_submit_count').desc(nulls_last=True)),
+        )
+    
+    for user in user_list:
+        if user == request.user:
+            user_rank = user.user_rank
+
+    recent_sovled_question = UserQuestionMap.objects.filter(
+        user_id = request.user,
+        question_correct_yn ='Y'
+    )
+
+    solve_time_avg = recent_sovled_question.aggregate(solve_time_avg = Avg(F("question_end_time") - F("question_start_time")))
+    recent_sovled_question = recent_sovled_question.select_related().order_by("-question_end_time")[:5]
+    print(recent_sovled_question.query)
+
+   
+
+
+    data = {
+        "correct_cnt" : correct_cnt,
+        "user_rank" : user_rank,
+        "solve_time_avg" : solve_time_avg["solve_time_avg"],
+        "recent_sovled_question":recent_sovled_question
+    }
+    return render(request, "dashboard.html", data)
 
 
 def handler404(request, exception, template_name="404.html"):

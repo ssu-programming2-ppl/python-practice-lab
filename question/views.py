@@ -19,12 +19,16 @@ def question_list(request):
     page = request.GET.get("page", "1")
     limit = request.GET.get("limit", "10")
 
-    user_map = UserQuestionMap.objects.filter(user_id="admin").values_list(
-        "question_seq", flat=True
-    )
+    logined_user = request.user
+    user_map = UserQuestionMap.objects.filter(
+        user_id=logined_user, question_save_yn="Y"
+    ).values_list("question_seq", flat=True)
+
+    print(user_map)
+
     question_list = Question.objects.annotate(
         question_save_yn=Case(
-            When(question_seq__in=user_map, then=F("question_map__question_save_yn")),
+            When(question_seq__in=user_map, then=Value("Y")),
             default=Value("N"),
         )
     ).order_by("-question_seq")

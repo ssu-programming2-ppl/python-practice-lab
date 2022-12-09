@@ -21,7 +21,7 @@
                                                 <a href="#" class="btn btn-success btn-circle btn-lg">
                                                     <i class="fas fa-check"></i>
                                                 </a>
-                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">N개</div>
+                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{correct_cnt}}개</div>
                                             </div>
                                         </div>
 
@@ -31,7 +31,7 @@
                                                     <a href="#" class="btn btn-info btn-circle btn-lg">
                                                         <i class="fa-solid fa-ranking-star"></i>
                                                     </a>
-                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">N위</div>
+                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{user_rank}}위</div>
 
                                             </div>
                                         </div>
@@ -42,14 +42,14 @@
                                                     <a href="#" class="btn btn-secondary btn-circle btn-lg">
                                                         <i class="fa-regular fa-clock"></i>
                                                     </a>
-                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">______분</div>
+                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{solve_time_avg}}</div>
 
                                             </div>
                                         </div>
 
 
                                     <div class="container">
-                                        <canvas id="myChart"></canvas>
+                                        <div id="graph"></div>
                                     </div>
                                     <div class="card shadow mb-4 col-12">
                                         <div class="card-header py-3">최근 해결한 문제</div>
@@ -64,21 +64,14 @@
                                                     </tr>
                                                     </thead>
                                                     <tbody>
+                                                    {% for question in recent_sovled_question %}
                                                     <tr>
-                                                        <td><a href="https://www.naver.com">문제 A</a></td>
-                                                        <td>박OO</td>
-                                                        <td>_____분</td>
+                                                        <td><a href="/question/{{question.question_seq}}">{{question.question_seq.question_title}}</a></td>
+                                                        <td>{{question.question_seq.question_creator.nickname}}</td>
+                                                        <td>{{question.question_end_time}}</td>
                                                     </tr>
-                                                     <tr>
-                                                        <td><a href="https://www.naver.com">문제 B</a></td>
-                                                        <td>이OO</td>
-                                                        <td>_____분</td>
-                                                    </tr>
-                                                     <tr>
-                                                        <td><a href="https://www.naver.com">문제 C</a></td>
-                                                        <td>서OO</td>
-                                                        <td>_____분</td>
-                                                    </tr>
+                                                    {% endfor %}
+                                              
                                                     </tbody>
                                                 </table>
                                             </div>
@@ -101,25 +94,37 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous"></script>
   <!-- 차트 -->
-  <script>
-    var ctx = document.getElementById('myChart').getContext('2d');
-    var chart = new Chart(ctx, {
-      // 챠트 종류를 선택
-      type: 'line',
+  <py-env>
+    - pandas
+    - matplotlib
+    - seaborn
+  </py-env>
+  <py-script output = 'graph'>
+    
+    import pandas as pd
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    
+    fig, ax = plt.subplots()
+    
+    data1 = [90, 80, 70, 60, 50]
+    data2 = [80, 70, 90, 60, 70]
+    
+    plt.plot(data1, marker = 'o' , color = 'g', label = 'data1')
+    plt.plot(data2, marker = '^', label = 'data2')
+    plt.title('test graph')
+    plt.legend()
+    plt.grid(True)
+    
+    fig
 
-      // 챠트를 그릴 데이타
-      data: {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-        datasets: [{
-          label: 'My First dataset',
-          backgroundColor: 'transparent',
-          borderColor: 'red',
-          data: [0, 10, 5, 2, 20, 30, 45]
-        }]
-      },
-      // 옵션
-      options: {}
-    });
-  </script>
+    </py-script>
+    <py-script style='display:none;'>
+        from js import document, window
+        e = document.getElementById("graph").firstElementChild.firstElementChild
+
+        e.setAttribute('width', '100%')
+        e.setAttribute('height', '100%')
+    </py-script>
             <!-- End of Main Content -->
         {% endblock content %}
