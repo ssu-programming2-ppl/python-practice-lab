@@ -106,14 +106,19 @@
                                                                     {% endif %}
                                                                 </td>
                                                                 <td>
-                                                                    <i class="fa-solid fa-star"></i> 0.0
+                                                                    {% if question.question_rating == None %}
+                                                                        <i class="fa-solid fa-star"></i> -
+                                                                    {% else %}
+                                                                        <i class="fa-solid fa-star"></i> {{question.question_rating}}
+                                                                    {% endif%}
                                                                 </td>
                                                                 <td>{{question.question_lang}}</td>
                                                                 <td>
                                                                     <ul class="list-inline mb-0">
                                                                         {% if question.question_save_yn == 'Y' %}
                                                                             <li class="list-inline-item">
-                                                                                <a href="javascript:void(0);"
+                                                                                <a 
+                                                                                href="/question/save/{{question.question_seq}}"
                                                                                 data-bs-toggle="tooltip"
                                                                                 data-bs-placement="top"
                                                                                 title="save"
@@ -121,7 +126,8 @@
                                                                             </li>
                                                                         {% else %}
                                                                             <li class="list-inline-item">
-                                                                                <a href="javascript:void(0);"
+                                                                                <a 
+                                                                                href="/question/save/{{question.question_seq}}"
                                                                                 data-bs-toggle="tooltip"
                                                                                 data-bs-placement="top"
                                                                                 title="save"

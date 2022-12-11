@@ -3,8 +3,8 @@ import json
 from core import utils
 from main.models import User
 from question.models import UserQuestionMap, Question
-from django.db.models import F, Case, When, Value,Sum,ExpressionWrapper, Func, Q, Window,Avg
-from django.db.models.functions import Abs, Rank, RowNumber
+from django.db.models import F, Case, When, Value, Sum, Window, Avg, Count
+from django.db.models.functions import Rank, Coalesce, Trunc
 from question.models import UserQuestionMap
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
@@ -99,7 +99,7 @@ def overview(request):
     else:
         level = "상"
 
-    # 정해진 난이도로 5개 조회 및 제출이 많은 순으로 정렬 
+    # 정해진 난이도로 5개 조회 및 제출이 많은 순으로 정렬
     question_list = (
         Question.objects.filter(question_level=level)
         .annotate(
@@ -109,9 +109,9 @@ def overview(request):
                 ),
                 default=Value("N"),
             ),
-            priority = Sum(F("question_map__question_submit_count"))
+            priority=Sum(F("question_map__question_submit_count")),
         )
-        .order_by(F('priority').desc(nulls_last=True))[:5]
+        .order_by(F("priority").desc(nulls_last=True))[:5]
     )
 
     print(question_list.query)
@@ -125,39 +125,52 @@ def overview(request):
     return render(request, "overview.html", data)
 
 
-@login_required(login_url='/login')
+@login_required(login_url="/login")
 def dashboard(request):
 
-    correct_cnt = UserQuestionMap.objects.filter(user_id = request.user, question_correct_yn='Y').count()
+    correct_cnt = UserQuestionMap.objects.filter(
+        user_id=request.user, question_correct_yn="Y"
+    ).count()
 
     user_list = User.objects.annotate(
-        question_submit_count=Sum('user_map__question_submit_count'),
+        question_submit_count=Sum(Coalesce("user_map__question_submit_count", 0)),
         user_rank=Window(
-		expression=Rank(), 
-		order_by=F('question_submit_count').desc(nulls_last=True)),
-        )
-    
+            expression=Rank(),
+            order_by=Coalesce(F("question_submit_count"), 0).desc(nulls_last=True),
+        ),
+    )
+
     for user in user_list:
         if user == request.user:
             user_rank = user.user_rank
 
     recent_sovled_question = UserQuestionMap.objects.filter(
-        user_id = request.user,
-        question_correct_yn ='Y'
+        user_id=request.user, question_correct_yn="Y"
     )
 
-    solve_time_avg = recent_sovled_question.aggregate(solve_time_avg = Avg(F("question_end_time") - F("question_start_time")))
-    recent_sovled_question = recent_sovled_question.select_related().order_by("-question_end_time")[:5]
-    print(recent_sovled_question.query)
+    solve_time_avg = recent_sovled_question.aggregate(
+        solve_time_avg=Avg(F("question_end_time") - F("question_start_time"))
+    )
+    recent_sovled_question = recent_sovled_question.select_related().order_by(
+        "-question_end_time"
+    )[:5]
 
-   
-
+    test = (
+        UserQuestionMap.objects.filter(user_id=request.user, question_correct_yn='Y' )
+        .exclude(question_end_time__isnull=True)
+        .annotate(m=Trunc('question_start_time', 'month'))
+        .values("m")
+        .annotate(cnt=Count("map_seq"), sum=Sum("map_seq"))
+        .values("m", "cnt", "sum")
+    )
+    print(test.query)
+    print(test)
 
     data = {
-        "correct_cnt" : correct_cnt,
-        "user_rank" : user_rank,
-        "solve_time_avg" : solve_time_avg["solve_time_avg"],
-        "recent_sovled_question":recent_sovled_question
+        "correct_cnt": correct_cnt,
+        "user_rank": user_rank,
+        "solve_time_avg": solve_time_avg["solve_time_avg"],
+        "recent_sovled_question": recent_sovled_question,
     }
     return render(request, "dashboard.html", data)
 
@@ -173,7 +186,7 @@ def handler500(request, *args, **argv):
 
 
 def handler403(request, *args, **argv):
-    return render(request, '403.html', status=403)
+    return render(request, "403.html", status=403)
 
 
 def test(request):

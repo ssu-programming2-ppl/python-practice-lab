@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from . import service
 import json
 from core import utils
@@ -8,7 +8,7 @@ import datetime as dt
 from django.db import transaction
 from django.core.paginator import Paginator
 from django.core import serializers
-from django.db.models import F, Subquery, Q, Case, When, Value
+from django.db.models import F, Subquery, Q, Case, When, Value,Avg
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -24,13 +24,14 @@ def question_list(request):
         user_id=logined_user, question_save_yn="Y"
     ).values_list("question_seq", flat=True)
 
-    print(user_map)
+    
 
     question_list = Question.objects.annotate(
         question_save_yn=Case(
             When(question_seq__in=user_map, then=Value("Y")),
             default=Value("N"),
-        )
+        ),
+        question_rating = Avg('question_map__question_rating')
     ).order_by("-question_seq")
 
     paginator = Paginator(question_list, limit)
@@ -50,9 +51,6 @@ def question_create(request):
     if request.method == "GET":
         return render(request, "question_create.html")
     else:
-        # TODO(김금주) 문제 생성 로직 필요
-        # 1. 문제 테이블에 문제 저장
-        # 2. 배열로 들어온 테스트 케이스 테이블에 테스트 케이스 저장
 
         body = json.loads(request.body.decode("utf-8"))
         question = Question()
@@ -61,7 +59,7 @@ def question_create(request):
         question.question_lang = body["question_lang"]
         question.question_text = body["question_text"]
         question.question_code = body["question_code"]
-        question.user_id = User.objects.get(user_id="admin")
+        question.question_creator = request.user
         question.save()
 
         testcase_list = body["testcase_list"]
@@ -116,7 +114,7 @@ def question_scoring(request):
             user_question_map_info.question_seq = Question.objects.get(
                 question_seq=question_seq
             )
-            user_question_map_info.user_id = User.objects.get(user_id=logined_user)
+            user_question_map_info.user_id = logined_user
             user_question_map_info.question_correct_yn = "N"
             user_question_map_info.question_save_yn = "N"
             user_question_map_info.question_submit_count = 0
@@ -238,4 +236,22 @@ def question_save(request, question_seq):
     print(user_map.question_correct_yn)
     user_map.save()
 
-    return utils.create_ressult("", "저장(즐겨찾기) 완료", True)
+    # return utils.create_ressult("", "저장(즐겨찾기) 완료", True)
+    return redirect(request.META.get("HTTP_REFERER"))
+
+
+@login_required(login_url="/login")
+def question_rating(request):
+
+    if request.method == "POST":
+
+        body = json.loads(request.body.decode("utf-8"))
+        user_map = UserQuestionMap.objects.get(
+            user_id=request.user, question_seq=body["question_seq"]
+        )
+        user_map.question_rating = body["rate"]
+        user_map.save()
+
+        return utils.create_ressult("", "별점 등록 완료", True)    
+    
+    # return utils.create_ressult("", "지원하지 않ㅇ", True)    

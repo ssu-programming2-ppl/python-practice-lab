@@ -30,7 +30,7 @@
                         <th>구분</th>
                         <th>내용</th>
                         <th>등록일</th>
-                        <th>조회수</th>
+                        {% comment %} <th>조회수</th> {% endcomment %}
                       </tr>
                     </thead>
                     <tbody>
@@ -39,10 +39,10 @@
                         <td>{{board.board_seq}}</td>
                         <td>{{board.board_division}}</td>
                         <td>
-                          <a href="{{board.board_link}}">{{board.board_title}}</a>
+                          <a href="{{board.board_link}}">{{board.board_title}}</a> 
                         </td>
                         <td>{{board.created_at}}</td>
-                        <td>{{board.board_view_count}}</td>
+                        {% comment %} <td>{{board.board_view_count}}</td> {% endcomment %}
                       </tr>
                       {% endfor %}
                     </tbody>
@@ -66,5 +66,9 @@
 
           </div>
     </div>
+    <py-script style='display:none;'>
+      def test(*args):
+        print(args)
+    </py-script>
     <!-- End of Main Content -->
 {% endblock content %}

@@ -78,6 +78,70 @@
       </div>
    </div>
 </template>
+
+<script src="/static/js/mdb.min.js"></script>
+<script src="/static/js/mdb.min.js.map"></script>
+<link href="/static/css/mdb.min.css" rel="stylesheet">
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-mdb-toggle="modal" data-mdb-target="#ratingModal" id="ratingBtn" style='display:none'>
+   Launch demo modal
+ </button>
+ 
+ <!-- Modal -->
+ <div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+     <div class="modal-content">
+       <div class="modal-header">
+         <h5 class="modal-title" id="exampleModalLabel">별점 선택</h5>
+         {% comment %} <button type="button" class="btn-close" data-mdb-dismiss="modal" aria-label="Close"></button> {% endcomment %}
+       </div>
+       <div class="modal-body">
+         <fieldset>
+            <input type="radio" name="rate" value="5" id="rate5"><label for="rate5">⭐</label>
+            <input type="radio" name="rate" value="4" id="rate4"><label for="rate4">⭐</label>
+            <input type="radio" name="rate" value="3" id="rate3"><label for="rate3">⭐</label>
+            <input type="radio" name="rate" value="2" id="rate2"><label for="rate2">⭐</label>
+            <input type="radio" name="rate" value="1" id="rate1"><label for="rate1">⭐</label>
+        </fieldset>
+       </div>
+       <div class="modal-footer">
+         {% comment %} <button type="button" class="btn btn-secondary" data-mdb-dismiss="modal">Close</button> {% endcomment %}
+         <button type="button" class="btn btn-primary" data-mdb-dismiss="modal" id="saveBtn" pys-onClick="save_rating">별점 등록</button>
+       </div>
+     </div>
+   </div>
+</div>
+<style>
+   .modal-body fieldset{
+      display: inline-block; /* 하위 별점 이미지들이 있는 영역만 자리를 차지함.*/
+      border: 0; /* 필드셋 테두리 제거 */
+  }
+  .modal-body input[type=radio]{
+      display: none; 라디오박스 감춤 
+  } 
+  .modal-body label{
+      font-size: 3em; /* 이모지 크기 */
+      color: transparent; /* 기존 이모지 컬러 제거 */
+      text-shadow: 0 0 0 #f0f0f0; /* 새 이모지 색상 부여 */
+  }
+  .modal-body label:hover{
+   text-shadow: 0 0 0 #fcee83; /* 마우스 호버 */
+   }
+   .modal-body label:hover ~ label{
+      text-shadow: 0 0 0 #fcee83; /* 마우스 호버 뒤에오는 이모지들 */
+   }
+
+   .modal-body fieldset{
+      display: inline-block; /* 하위 별점 이미지들이 있는 영역만 자리를 차지함.*/
+      direction: rtl; /* 이모지 순서 반전 */
+      border: 0; /* 필드셋 테두리 제거 */
+  }
+
+.modal-body input[type=radio]:checked ~ label{
+   text-shadow: 0 0 0 #fcee83; /* 마우스 클릭 체크 */
+}
+
+</style>
 <py-env>
    - paths:
      - /static/python/util.py
@@ -137,10 +201,25 @@
       
       if score == 100:
          window.alert("정답입니다.")      
-         document.location.href='/question/list'
+         Element("ratingBtn").element.click()
       else:
          window.alert(f"오답입니다 : {score}")      
 
    question_start_time = str(datetime.datetime.now())
+
+   async def save_rating(e): 
+
+      rate = document.querySelector('input[name="rate"]:checked').value;
+      body = json.dumps({"rate": rate, "question_seq": question_seq})
+
+      data = await request("http://{{request.get_host}}" + "/question/rating", body=body, method="POST")
+
+      result_json = await data.json()
+
+      if result_json['flag']:
+         document.location.href='/question/list'
+      else:
+         window.alert(f"오류발생 : {result_json['message']}")     
    </py-script>
+
 {% endblock content %}
