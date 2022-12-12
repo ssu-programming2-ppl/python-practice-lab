@@ -32,7 +32,7 @@ def question_list(request):
             default=Value("N"),
         ),
         question_rating = Avg('question_map__question_rating')
-    ).order_by("-question_seq")
+    ).order_by("-created_at")
 
     paginator = Paginator(question_list, limit)
 
@@ -189,6 +189,7 @@ def syntax_check(request):
 @login_required(login_url="/login")
 def testcase_check(request):
     # 포스트 형식일시 테스트 케이스 검사
+    print("zzz")
     if request.method == "POST":
 
         body = json.loads(request.body.decode("utf-8"))

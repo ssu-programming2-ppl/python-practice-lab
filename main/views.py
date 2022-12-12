@@ -81,13 +81,20 @@ def overview(request):
     logined_user = request.user
 
     # 생성 갯수 조회
-    created_cnt = Question.objects.filter(user_id=logined_user).count()
+    created_cnt = Question.objects.filter(question_creator=logined_user).count()
+    #print(created_cnt)
 
     # 정답률 조회
     correct_cnt = UserQuestionMap.objects.filter(
         user_id=logined_user, question_correct_yn="Y"
     ).count()
-    total_cnt = UserQuestionMap.objects.filter(user_id=logined_user).count()
+    total_cnt = UserQuestionMap.objects.filter(user_id=logined_user,question_submit_count__gt = 0 ).count()
+    print(correct_cnt)
+    print(total_cnt)
+
+    if total_cnt == 0:
+        total_cnt = 1
+        
     correct_rate = int((correct_cnt / total_cnt) * 100)
 
     user_map = UserQuestionMap.objects.filter(user_id=logined_user).values_list(
@@ -155,7 +162,7 @@ def dashboard(request):
     )
 
     now = timezone.now()
-    before = now - timezone.timedelta(days=10)
+    before = now - timezone.timedelta(days=7)
 
     date_range = (
         generate_series(
@@ -187,10 +194,16 @@ def dashboard(request):
         "-question_end_time"
     )[:5]
 
+
+    if solve_time_avg["solve_time_avg"]  == None:
+        test = '-'
+    else:
+        test = solve_time_avg["solve_time_avg"] - timedelta(microseconds=solve_time_avg["solve_time_avg"].microseconds)
+          
     data = {
         "correct_cnt": correct_cnt,
         "user_rank": user_rank,
-        "solve_time_avg": solve_time_avg["solve_time_avg"] - timedelta(microseconds=solve_time_avg["solve_time_avg"].microseconds),
+        "solve_time_avg": test,
         "recent_sovled_question": recent_sovled_question,
         "g_cnt":g_cnt,
         "g_date":g_date
