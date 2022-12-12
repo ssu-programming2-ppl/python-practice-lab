@@ -1,15 +1,19 @@
+from django.utils import timezone
+from datetime import datetime, timedelta
 from django.shortcuts import render, redirect
 import json
 from core import utils
 from main.models import User
 from question.models import UserQuestionMap, Question
-from django.db.models import F, Case, When, Value, Sum, Window, Avg, Count
-from django.db.models.functions import Rank, Coalesce, Trunc
+from django.db.models import *
+from django.db.models.functions import Rank, Coalesce, Trunc,Cast
 from question.models import UserQuestionMap
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.decorators import login_required
+from django_generate_series.models import generate_series
 import sys
+
 
 sys.setrecursionlimit(10**7)
 # Create your views here.
@@ -72,7 +76,6 @@ def register(request):
             user.save()
             return utils.create_ressult(None, "회원가입 성공", True)
 
-
 @login_required(login_url="/login")
 def overview(request):
     logined_user = request.user
@@ -125,7 +128,6 @@ def overview(request):
     return render(request, "overview.html", data)
 
 
-@login_required(login_url="/login")
 def dashboard(request):
 
     correct_cnt = UserQuestionMap.objects.filter(
@@ -151,28 +153,50 @@ def dashboard(request):
     solve_time_avg = recent_sovled_question.aggregate(
         solve_time_avg=Avg(F("question_end_time") - F("question_start_time"))
     )
+
+    now = timezone.now()
+    before = now - timezone.timedelta(days=10)
+
+    date_range = (
+        generate_series(
+            before,
+            now,
+            "1 days",
+            output_field=DateTimeField,
+        )
+        .annotate(
+            t=Trunc('term', 'day'),
+            cnt=Subquery(
+                recent_sovled_question
+                .annotate(
+                    m =Trunc('question_start_time', 'day')
+                )
+                .filter(m=OuterRef("t"))
+                .values("m")
+                .annotate(c=Count("m"))
+                .values("c").annotate(cnt = Coalesce('c',0)).values('cnt')
+            )
+        )
+    )
+    print(date_range.query)
+
+    g_cnt = list(map(lambda d: d['cnt'], date_range.values()))
+    g_date = list(map(lambda d: d['term'].strftime("%m-%d"), date_range.values()))
+
     recent_sovled_question = recent_sovled_question.select_related().order_by(
         "-question_end_time"
     )[:5]
 
-    test = (
-        UserQuestionMap.objects.filter(user_id=request.user, question_correct_yn='Y' )
-        .exclude(question_end_time__isnull=True)
-        .annotate(m=Trunc('question_start_time', 'month'))
-        .values("m")
-        .annotate(cnt=Count("map_seq"), sum=Sum("map_seq"))
-        .values("m", "cnt", "sum")
-    )
-    print(test.query)
-    print(test)
-
     data = {
         "correct_cnt": correct_cnt,
         "user_rank": user_rank,
-        "solve_time_avg": solve_time_avg["solve_time_avg"],
+        "solve_time_avg": solve_time_avg["solve_time_avg"] - timedelta(microseconds=solve_time_avg["solve_time_avg"].microseconds),
         "recent_sovled_question": recent_sovled_question,
+        "g_cnt":g_cnt,
+        "g_date":g_date
     }
     return render(request, "dashboard.html", data)
+
 
 
 def handler404(request, exception, template_name="404.html"):

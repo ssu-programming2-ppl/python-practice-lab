@@ -103,15 +103,16 @@
     
     fig, ax = plt.subplots()
     
-    data1 = [90, 80, 70, 60, 50]
-    data2 = [80, 70, 90, 60, 70]
+    data2 = {{g_cnt}}
+    data1 = {{g_date}}
     
-    plt.plot(data1, marker = 'o' , color = 'g', label = 'data1')
-    plt.plot(data2, marker = '^', label = 'data2')
-    plt.title('test graph')
-    plt.legend()
+    x = ['12.01', '12.02', '12.03', '12.04', '12.05', '12.06', '12.07']
+    y = [10, 5, 9, 7, 20, 30, 15]
+    plt.plot(data1 , data2, marker = 'o', linestyle = '-', color = 'r')
+    plt.ylim(0)
     plt.grid(True)
-    
+
+        
     fig
 
     </py-script>
