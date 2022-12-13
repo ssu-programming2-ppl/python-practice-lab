@@ -46,11 +46,14 @@
 
                                             </div>
                                         </div>
-
-
+                        
                                     <div class="container">
                                         <div id="graph"></div>
                                     </div>
+                                    <br>
+                                    <br>
+                                    <br>
+                                    <br>
                                     <div class="card shadow mb-4 col-12">
                                         <div class="card-header py-3">최근 해결한 문제</div>
                                         <div class="card-body">
@@ -86,23 +89,31 @@
     - pandas
     - matplotlib
     - seaborn
+    - paths:
+        - /static/vendor/NanumGothic.ttf
+        - /static/vendor/NanumGothicBold.ttf
   </py-env>
   <py-script output = 'graph'>
     
     import pandas as pd
     import seaborn as sns
     import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
     
+    NanumGothic = fm.FontProperties(fname='./NanumGothic.ttf')
+    NanumGothicBold = fm.FontProperties(fname='./NanumGothicBold.ttf')
+
     fig, ax = plt.subplots()
     
     y = {{g_cnt}}
     x = {{g_date}}
-    
-    plt.bar(x , y, color = 'y')
+
+    plt.rcParams['font.family'] = 'NanumGothic'
+    plt.bar(x , y, color = 'y', width = 0.5)
     plt.box(False)
     plt.grid(True, axis = 'y', alpha = 0.5, linestyle = '--')
-    plt.title('Daily Correct Count Graph', fontsize=10)
-    plt.ylim(0,15)
+    plt.title('최근 정답 카운트', fontsize=10, fontproperties=NanumGothicBold)
+    plt.ylim(0,10)
 
         
     fig

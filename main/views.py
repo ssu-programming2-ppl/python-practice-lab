@@ -88,7 +88,7 @@ def overview(request):
     correct_cnt = UserQuestionMap.objects.filter(
         user_id=logined_user, question_correct_yn="Y"
     ).count()
-    total_cnt = UserQuestionMap.objects.filter(user_id=logined_user,question_submit_count__gt = 0 ).count()
+    total_cnt = UserQuestionMap.objects.filter(user_id=logined_user, question_submit_count__gt = 0 ).count()
     print(correct_cnt)
     print(total_cnt)
 
