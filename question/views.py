@@ -3,12 +3,10 @@ from . import service
 import json
 from core import utils
 from question.models import UserQuestionMap, Question, Testcase
-from main.models import User
 import datetime as dt
 from django.db import transaction
 from django.core.paginator import Paginator
-from django.core import serializers
-from django.db.models import F, Subquery, Q, Case, When, Value,Avg
+from django.db.models import *
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -31,7 +29,8 @@ def question_list(request):
             When(question_seq__in=user_map, then=Value("Y")),
             default=Value("N"),
         ),
-        question_rating = Avg('question_map__question_rating')
+        question_rating = Avg('question_map__question_rating'),
+        question_submit_count=Sum(F("question_map__question_submit_count")),
     ).order_by("-created_at")
 
     paginator = Paginator(question_list, limit)

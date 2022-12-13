@@ -119,12 +119,10 @@ def overview(request):
                 ),
                 default=Value("N"),
             ),
-            priority=Sum(F("question_map__question_submit_count")),
+            question_submit_count=Sum(F("question_map__question_submit_count")),
         )
-        .order_by(F("priority").desc(nulls_last=True))[:5]
+        .order_by(F("question_submit_count").desc(nulls_last=True))[:5]
     )
-
-    print(question_list.query)
 
     data = {
         "correct_rate": correct_rate,

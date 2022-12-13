@@ -44,6 +44,7 @@
                                         <th scope="col">Rate</th> 
                                         <th scope="col">Type</th>
                                         <th scope="col" style="width: 200px;">Save</th>
+                                        <th scope="col">제출</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -90,6 +91,7 @@
                                                 {% endif %}
                                             </ul>
                                         </td>
+                                        <td>{{question.question_submit_count}}</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
